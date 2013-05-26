@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:id="@+id/title_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"  
+        android:background="@drawable/logo_bk"
+        >   
+     <ImageView 
+            android:id="@+id/icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/title_bar"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="20dp"
+            android:src="@drawable/mmcs_logo" />   
+     <!--      
+          <ImageView 
+            android:id="@+id/icon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/mmcs_icon" />
+
+        <TextView
+            android:id="@+id/mmcs"
+            android:layout_width="wrap_content"
+            android:layout_height="70dp"
+            android:layout_toRightOf="@id/icon"
+            android:gravity="center"
+            android:text="多媒体会议系统"
+            android:textSize="20dp"
+            android:layout_marginLeft="10dp" />
+-->
+        <TextView
+            android:id="@+id/loginedText"
+            android:layout_width="250dp"
+            android:layout_height="70px"
+            android:layout_alignParentRight="true"
+            android:gravity="center_vertical"
+            android:text="欢迎您..."
+            android:textSize="20dp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/remote_ll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/title_bar"
+        android:orientation="vertical"
+        android:background="@drawable/shape" >               
+
+       <com.rongdian.GL2JNIView
+         android:id="@+id/remoteVideoView"
+         android:layout_width="796dip"
+         android:layout_height="652dip" />
+        
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/local_ll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/title_bar"
+        android:orientation="vertical"
+        android:background="@drawable/shape" >
+       
+        <SurfaceView
+              android:id="@+id/surface_camera"
+              android:layout_width="450dip"
+              android:layout_height="370dip" />
+         
+
+	</LinearLayout>
+	<RelativeLayout
+        android:id="@+id/info_rl"
+        android:layout_width="465px"
+        android:layout_height="170px"
+        android:layout_alignLeft="@id/local_ll"
+        android:layout_below="@id/local_ll"
+        android:layout_marginTop="7dip"
+        android:background="@drawable/shape" >	
+		    
+	    <TableLayout
+	        android:id="@+id/conf_info_lv"
+            android:layout_width="225px"
+            android:layout_height="fill_parent"
+            android:background="#fff" >
+
+            <TableRow>
+
+                <TextView
+	                android:id="@+id/titleLabel"
+	                android:layout_width="120dip"
+	                android:layout_height="wrap_content"
+	                android:layout_gravity="right|left"
+	                android:text="会议信息 "	                
+	                android:paddingTop="5dip"
+	                android:background="@drawable/title_bk"
+	                android:textColor="#fff"
+	                android:textSize="16dp"
+	                android:paddingLeft="10dip" />
+            </TableRow>
+            <TableRow android:layout_marginTop="10dip" android:layout_marginLeft="-35dip">
+	            <TextView		                    
+	                android:id="@+id/titleLabel"
+	                android:layout_width="80dip"	               
+	                android:layout_gravity="right|center_vertical"
+	                android:text="会议名称：" />
+	
+	            <TextView
+	                android:id="@+id/confTitle"
+	                android:layout_width="160dip"
+	                android:layout_height="wrap_content"
+	                android:paddingLeft="5dip"
+	                android:background="@drawable/tablelayout_style"/>                		
+            </TableRow>
+            
+            <TableRow android:layout_marginTop="8dip" android:layout_marginLeft="-35dip" >
+                <TextView
+	                android:id="@+id/subjectLabel"
+	                android:layout_width="80dip"
+	                android:layout_height="wrap_content"
+	                android:layout_gravity="right|center_vertical"
+	                android:text="会议主题：" />
+	            <TextView
+	                android:id="@+id/confSubject"
+	                android:layout_width="160dip"
+	                android:layout_height="wrap_content"          
+	                android:paddingLeft="5dip" 
+	                android:background="@drawable/tablelayout_style"/>
+            </TableRow>
+                
+            <TableRow android:layout_marginTop="8dip" android:layout_marginLeft="-35dip">
+                 <TextView
+	                 android:id="@+id/chairLabel"
+	                 android:layout_width="80dip"
+	                 android:layout_height="wrap_content"
+	                 android:layout_gravity="right|center_vertical"
+	                 android:text="会议主席：" />
+	             <TextView
+	                 android:id="@+id/confChairman"
+	                 android:layout_width="160dip"
+	                 android:layout_height="wrap_content"          
+	                 android:paddingLeft="5dip" 
+	                 android:background="@drawable/tablelayout_style"/>
+             </TableRow>
+	                
+             <TableRow android:layout_marginTop="8dip" android:layout_marginLeft="-35dip">
+                  <TextView
+	                 android:id="@+id/durationLabel"
+	                 android:layout_width="80dip"
+	                 android:layout_height="wrap_content"
+	                 android:layout_gravity="right|center_vertical"
+	                 android:text="会议时间：" />
+	             <TextView
+	                 android:id="@+id/confDuration"
+	                 android:layout_width="160dip"
+	                 android:layout_height="wrap_content"          
+	                 android:paddingLeft="5dip"
+	                 android:background="@drawable/tablelayout_style" />
+             </TableRow>
+	                
+	    </TableLayout>
+	     
+	    <RelativeLayout 
+	        android:id="@+id/meminfo_rl"
+	        android:layout_width="wrap_content"
+	        android:layout_height="fill_parent"
+	        android:layout_toRightOf="@id/conf_info_lv"
+	        android:background="#fff"
+	        >
+	    
+	    <TableLayout
+            android:id="@+id/mem_info_item_lv"
+            android:layout_width="215px"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/conf_info_lv"
+            android:divider="#ff0000"
+            android:dividerHeight="10px"
+            android:layout_marginLeft="5dip" >
+            <TableRow >
+                <TextView
+	                android:id="@+id/confmem"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_gravity="right|left"
+	                android:text="与会人员信息"
+	                android:paddingTop="5dip"
+	                android:background="@drawable/title_bk"
+	                android:textColor="#fff"
+	                android:textSize="16dp"
+	                android:paddingLeft="10dip" />
+            </TableRow>
+            <TableRow android:layout_marginTop="10dip">
+	            <TextView		                    
+	                android:id="@+id/confUserName"
+	                android:layout_width="100dip"
+	                android:layout_height="wrap_content"
+	                android:layout_gravity="right|left"
+	                android:text="用户名 "
+	                android:layout_marginLeft="10dip" />
+	
+	            <TextView
+	                android:id="@+id/confUserId"
+	                android:layout_width="100dip"
+	                android:layout_height="wrap_content"
+	                android:text="用户ID"
+	                android:layout_marginLeft="-20dip"  />                		
+            </TableRow>
+        </TableLayout>
+
+        <ListView
+            android:id="@+id/mem_info_lv"
+            android:layout_width="215px"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/mem_info_item_lv"
+            android:layout_toRightOf="@id/conf_info_lv" 
+            android:layout_marginLeft="5dip">
+        </ListView>
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/btn_ll"
+        android:layout_width="465px"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/local_ll"
+        android:layout_below="@id/info_rl"
+        android:layout_marginLeft="35dip"
+        android:layout_marginTop="20dip" >
+
+        <Button
+            android:id="@+id/apply_speak"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_style"
+            android:text="申请发言" />
+
+        <Button
+            android:id="@+id/exit_conf"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dip"
+            android:background="@drawable/button_style"
+            android:text="申请离开" />
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content" >
+  <LinearLayout
+      android:layout_width="wrap_content"
+  	  android:layout_height="wrap_content"
+  	  android:layout_alignParentLeft="true" >
+	  <ImageView 
+	      android:layout_width="wrap_content"  
+	      android:layout_height="wrap_content"  
+	      android:src="@drawable/ic_launcher"/>
+	  <TextView android:id="@+id/text"  
+	      android:layout_width="wrap_content"  
+	      android:layout_height="wrap_content"  
+	      android:layout_alignParentLeft="true"  
+	      android:text="多媒体会议系统" />  
+	  </LinearLayout>
+	  <LinearLayout
+      	  android:layout_width="wrap_content"
+  	  	  android:layout_height="wrap_content"
+  	  	  android:layout_alignParentRight="true" >
+	      <TextView 
+	      	android:id="@+id/userInfo"  
+			   android:layout_width="wrap_content"  
+			   android:layout_height="wrap_content"  
+			   android:layout_alignParentLeft="true"  
+			   android:text="正在注册sip服务器" />
+  	  </LinearLayout>
+ </RelativeLayout>  
+  
