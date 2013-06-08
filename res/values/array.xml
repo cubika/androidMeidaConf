@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="items">
+        <item>创建会议</item>
+        <item>退出会议</item>
+        <item>会议管理</item>
+        <item>呼起用户</item>
+        <item>会议信息</item>
+        <item>参会人员</item>  
+        <item>账户管理</item>
+        <item>联系人管理</item>     
+        <item>退出程序</item>
+    </string-array>
+    
+    <string-array name="confMessages">
+        <item>会议名称</item>
+        <item>会议主题</item>
+        <item>持续时间</item>
+        <item>会议主席</item>
+    </string-array>
+    
+    <string-array name="resolList">
+        <item>CIF(352*288)</item>
+        <item>4CIF(704*576)</item>
+        <item>720P(1280*720)</item>
+        <item>1080P(1920*1080)</item>
+        <item>QCIF(176*114)</item>
+    </string-array>
+   
+</resources>

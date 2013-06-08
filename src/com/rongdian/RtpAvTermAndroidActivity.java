@@ -1,6 +1,8 @@
 package com.rongdian;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.app.Activity;
 import android.content.res.Configuration;
@@ -46,7 +48,10 @@ public abstract class RtpAvTermAndroidActivity extends Activity implements
 	private boolean isVideoOutput = false;
 
 	private long term = 0;
-
+	
+	private boolean surfaceCreated;
+	private boolean surfaceChanged;
+	
 	//
 	// //-------------------------------------------------------------------------
 	//
@@ -61,7 +66,9 @@ public abstract class RtpAvTermAndroidActivity extends Activity implements
 		super.onCreate(savedInstanceState);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		setContentView(getLayoutId());
-
+		
+		surfaceCreated=false;
+		surfaceChanged=false;
 		mSurfaceView = getLocalPreview();
 		SurfaceHolder surfaceHolder = mSurfaceView.getHolder();
 		surfaceHolder.addCallback(this);
@@ -72,28 +79,40 @@ public abstract class RtpAvTermAndroidActivity extends Activity implements
 	protected void onPause() {
 		super.onPause();
 		getRomotePreview().onPause();
+		Log.i("RtpAvTermActivity", "onPause");
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 		getRomotePreview().onResume();
+		Log.i("RtpAvTermActivity", "onResume");
 	}
 
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
-		// TODO Auto-generated method stub
+		Log.i("RtpAvTermActivity","surfaceChanged");
+		surfaceChanged=true;
 	}
 
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
-		// TODO Auto-generated method stub
+		Log.i("RtpAvTermActivity","surfaceCreated");
+		surfaceCreated=true;
 	}
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		// TODO Auto-generated method stub
+		Log.i("RtpAvTermActivity","surfaceDestoryed");
+		surfaceCreated=false;
+		surfaceChanged=false;
+		if(mCamera!=null){
+			mCamera.setPreviewCallback(null);
+			mCamera.stopPreview();
+			mCamera.release();
+			mCamera=null;
+		}
 	}
 
 	//
@@ -185,12 +204,23 @@ public abstract class RtpAvTermAndroidActivity extends Activity implements
 			return (false);
 		}
 
-		SurfaceHolder surfaceHolder = mSurfaceView.getHolder();
+		mSurfaceView = getLocalPreview();
+		final SurfaceHolder surfaceHolder = mSurfaceView.getHolder();
+		surfaceHolder.addCallback(this);
+		surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+		
 		mVideoWidth = videoWidth;
 		mVideoHeight = videoHeight;
-
-		mCamera = Camera.open(getFrontCameraId());
-
+		
+		//mCamera = Camera.open(getFrontCameraId());
+		if (mCamera == null) {
+			if (android.os.Build.VERSION.SDK_INT >= 9) {
+				mCamera = Camera.open(getFrontCameraId());  //leixiaojiang
+			} else {
+				mCamera = Camera.open();
+			}
+		}
+		
 		if (mPreviewRunning) {
 			mCamera.stopPreview();
 		}
@@ -222,20 +252,53 @@ public abstract class RtpAvTermAndroidActivity extends Activity implements
 		}
 
 		mCamera.setParameters(p);
-
 		mCamera.setPreviewCallback(this);
-		try {
-			// 设置预览的控件，图像会绘画在这个控件上。不需要人工去画
-			mCamera.setPreviewDisplay(surfaceHolder);
-		} catch (Exception ex) {
-			RtpAvTerm.ravtCloseLocalVideoPreview(this.term);
-			return (false);
-		}
 
-		// 开始预览
-		mCamera.startPreview();
-		mPreviewRunning = true;
+//		try {
+//			// 设置预览的控件，图像会绘画在这个控件上。不需要人工去画
+//			mCamera.setPreviewDisplay(surfaceHolder);
+//		} catch (Exception ex) {
+//			RtpAvTerm.ravtCloseLocalVideoPreview(this.term);
+//			return (false);
+//		}
+//		// 开始预览
+//		mCamera.startPreview();
+//		mPreviewRunning = true;
+		
+		Timer timer=new Timer();
+		TimerTask setPreviewTask = new TimerTask() {
 
+			@Override
+			public void run() {
+				if (surfaceCreated) { // 只有surface准备好了才开始预览
+					try {
+						// 设置预览的控件，图像会绘画在这个控件上。不需要人工去画
+						mCamera.setPreviewDisplay(surfaceHolder);
+					} catch (Exception ex) {
+						RtpAvTerm.ravtCloseLocalVideoPreview(term);
+					}
+					this.cancel();
+				}
+
+			}
+		};
+		TimerTask startPreviewTask = new TimerTask() {
+
+			@Override
+			public void run() {
+				if(surfaceChanged){
+					mCamera.startPreview(); //只有surface准备好了才开始预览
+					mPreviewRunning = true;
+					this.cancel();
+				}
+
+			}
+		};
+		
+		timer.schedule(setPreviewTask, 0, 1000);
+		timer.schedule(startPreviewTask, 0, 1000);
+
+		
 		return (true);
 	}
 
@@ -301,11 +364,13 @@ public abstract class RtpAvTermAndroidActivity extends Activity implements
 			return;
 		}
 
-		if (mPreviewRunning) {
+		if (mPreviewRunning && mCamera!=null) {
+			System.out.println("Release Preview now");
 			mPreviewRunning = false;
 			mCamera.setPreviewCallback(null);
 			mCamera.stopPreview();
 			mCamera.release();
+			mCamera=null;
 		}
 
 		RtpAvTerm.ravtCloseLocalVideoPreview(this.term);
@@ -484,7 +549,7 @@ public abstract class RtpAvTermAndroidActivity extends Activity implements
 		if (this.term == 0) {
 			return;
 		}
-
+		//Log.v("RtpAvTerm","Receive video");
 		getRomotePreview().renderer.setOpenGLESDisplay(this.term);
 		// 刷新界面
 		getRomotePreview().requestRender();

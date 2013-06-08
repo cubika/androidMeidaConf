@@ -6,7 +6,7 @@ import com.rongdian.SipTerm;
  * 常用的配置参数*/
 public class Constants {
 	//注册服务器
-	public static String registarIp = "10.109.254.101";
+	public static String registarIp = "10.109.252.6";
 	public static int registarPort = 5060;
 	public static String registarAccount = "as"; //注册服务器的用户名
 	public static int registerInterval = 120;           //注册周期，单位秒

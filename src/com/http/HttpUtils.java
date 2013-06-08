@@ -12,6 +12,8 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.util.Log;
+
 public class HttpUtils {
 	
 	public HttpUtils() {
@@ -30,14 +32,15 @@ public class HttpUtils {
 					.append("&");
 				}
 			}
-			buffer.deleteCharAt(buffer.length()-1);
-		//	System.out.println("HttpUtils.java "+buffer.toString());
+			if(buffer.length()!=0)
+				buffer.deleteCharAt(buffer.length()-1);
+			Log.v("SendPost",buffer.toString());
 			
 			URL url = new URL(urlPath); 
 			HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
 
 			// //设置连接属性
-			httpConn.setConnectTimeout(3000);
+			httpConn.setConnectTimeout(5000);
 			httpConn.setDoOutput(true);          // 使用 URL 连接进行输出
 			httpConn.setDoInput(true);           // 使用 URL 连接进行输入
 			httpConn.setUseCaches(false);        // 忽略缓存
@@ -88,16 +91,5 @@ public class HttpUtils {
 		return result;
 	}
 
-	/*public static void main(String[] args){
-		Map<String,String> params = new HashMap<String,String>();
-		params.put("username", "feng");
-		params.put("password", "1234");
-		try {
-			sendPostMessage(params,"utf-8");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-*/
+	
 }

@@ -49,7 +49,7 @@ public class DisconnectUserThread extends Thread{
 	        Bundle data = new Bundle();	       
 	        try {
 	      //      boolean result = webServiceLogin();//执行网络服务请求，耗时操作。。。
-	        	String result = httpUtils.sendPostMessage(urlString, params, "utf-8");	        	
+	        	String result = HttpUtils.sendPostMessage(urlString, params, "utf-8");	        	
 	        	try {
 	        		
 					JSONObject jsonObject = new JSONObject(result);

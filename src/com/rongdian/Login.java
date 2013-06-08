@@ -29,6 +29,7 @@ import android.widget.TableLayout;
 import android.widget.Toast;
 
 import com.http.HttpThread;
+import com.http.LogoutThread;
 import com.util.MyToast;
 import com.util.Constants;
 
@@ -63,6 +64,7 @@ public class Login extends Activity {
 		user_login_btn = (ImageButton) findViewById(R.id.user_login_btn);
 		user_register_btn = (ImageButton) findViewById(R.id.user_register_btn);
 	
+		//创建对话框，并使用自定义的主题
 		final Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogCustom1));
 	//	LoadUserDate();
 		
@@ -72,7 +74,8 @@ public class Login extends Activity {
 				//加入会议
 				if (id == R.id.user_joinConf_btn) {				
 					builder.setTitle("加入会议");
-
+					
+					//找到xml布局文件并实例化
 					TableLayout joinConfForm = (TableLayout) getLayoutInflater()
 							.inflate(R.layout.user_joinconf_form, null);// 装载/res/layout/user_joinconf_form.xml页面布局
 					builder.setView(joinConfForm);// 设置对话框显示的view对象
@@ -97,7 +100,7 @@ public class Login extends Activity {
 								}
 							});
 					// 创建并显示对话框
-					builder.create().show();
+					builder.show();
 				} 
 				//用户登录
 				else if (id == R.id.user_login_btn)
@@ -157,6 +160,7 @@ public class Login extends Activity {
 										}
 										else
 										{  
+											//使用sharedPreference存储数据
 											Editor editor = sp.edit();
 											editor.putString("uname", null);
 											editor.putString("upswd", null);
@@ -170,6 +174,7 @@ public class Login extends Activity {
 										params.put("isRemStatus", "false");
 										System.out.println("http://"+Constants.registarIp+":8888/MediaConf/userLogin.do?method=login");
 
+										//获取了参数，保存了参数之后，启用新的线程发送注册请求，
 										// 在工作线程中执行耗时任务，防止UI线程阻塞
 										HttpThread httpThread = new HttpThread(loginHandler);
 										// 10.0.2.2为电脑对于模拟器而言的IP地址。
@@ -192,7 +197,7 @@ public class Login extends Activity {
 								}
 							});
 					// 创建并显示对话框
-					builder.create().show();
+					builder.show();
 				} 
 				//创建账号
 				else// create
@@ -223,7 +228,7 @@ public class Login extends Activity {
 								}
 							});
 					// 创建并显示对话框
-					builder.create().show();
+					builder.show();
 				}
 			}
 
@@ -236,24 +241,26 @@ public class Login extends Activity {
 
     }
     
+    //Handler负责接收子线程的Message对象，把消息放入主线程队列中，配合主线程进行更新UI
     private Handler loginHandler=new Handler(){
         public void handleMessage(Message message) {
             switch (message.what) {
             case 1://程序执行正常
-            	Intent intent = new Intent(Login.this,MediaConfActivity.class);
+            	Intent intent = new Intent(Login.this,PhoneActivity.class);
             	Bundle data = new Bundle();
                 data.putString("myAccount", username);
                 data.putString("password", password);
                 data.putString("userId", message.getData().getString("userId"));
-          //      System.out.println("lllll   "+message.getData().getString("userId"));
+                System.out.println("username:"+username+"password:"+password+"userId"+message.getData().getString("userId"));
                 intent.putExtras(data);
             	finish();
 				startActivity(intent);
                 break;
             case 2:
             	String failure = message.getData().getString("info");
-            	if(failure.equals("Error")){
-            		Toast.makeText(Login.this, "登陆失败,请刷新后重新登陆!", Toast.LENGTH_LONG).show();
+            	if(failure.equals("alreadyLogined")){
+            		//Toast.makeText(Login.this, "登陆失败,请刷新后重新登陆!", Toast.LENGTH_LONG).show();
+            		Toast.makeText(Login.this, "您已经登录过了，现在为您注销，请您重新登录！", Toast.LENGTH_LONG).show();
             	}
             	else if(failure.equals("nameError")){
             		Toast.makeText(Login.this, "用户名错误!", Toast.LENGTH_LONG).show();
@@ -264,16 +271,6 @@ public class Login extends Activity {
             	break;
             default://程序异常...（网络连接出错）
                 Toast.makeText(Login.this, "网络异常，请稍后再尝试! "+message.getData().getString("info"), Toast.LENGTH_LONG).show();
-         /*       Bundle data1 = new Bundle();
-                data1.putString("myAccount", username);
-                data1.putString("password", password);
-                data1.putString("userId", message.getData().getString("userId"));
-                System.out.println("lllll   "+message.getData().getString("userId"));
-                System.out.println(username);
-                Intent intent1 = new Intent(Login.this,MediaConfActivity.class);
-                intent1.putExtras(data1);
-            	finish();
-				startActivity(intent1);*/
                 break;
             }
         }

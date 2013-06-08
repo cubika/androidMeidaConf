@@ -33,7 +33,7 @@ public class RefreshService extends Service  {
 	     	
 	    	try {
 	    	//	System.out.println("RefreshService timer "+result +"  "+Constants.registarIp);
-				result = httpUtils.sendPostMessage("http://"+Constants.registarIp+":8888/MediaConf/clientRefresh.do?", params, "utf-8");
+				result = HttpUtils.sendPostMessage("http://"+Constants.registarIp+":8888/MediaConf/clientRefresh.do?", params, "utf-8");
 				
 				
 			} catch (IOException e) {
@@ -70,7 +70,7 @@ public class RefreshService extends Service  {
 	
 	@Override  
     public boolean onUnbind(Intent intent) {  
-        Log.e("RefreshService","start onUnbind~~~");  
+        Log.v("RefreshService","start onUnbind");  
         timer.cancel();
         return super.onUnbind(intent);
     }  
@@ -80,7 +80,7 @@ public class RefreshService extends Service  {
     public void onDestroy() {
         super.onDestroy();
         timer.cancel();
-        Log.v( " RefreshService " , " on destroy " );
+        Log.v( "RefreshService" , "on destroy" );
     }
 	
 

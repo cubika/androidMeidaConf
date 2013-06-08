@@ -291,10 +291,13 @@ public class GL2JNIView extends GLSurfaceView {
 		public synchronized void onSurfaceChanged(GL10 gl, int width, int height) {
 			this.width = width;
 			this.height = height;
+			Log.i("GL2JNIView","onSurfaceChanged");
 		}
 
 		public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 			// Do nothing.
+			
+			Log.i("GL2JNIView","onSurfaceCreated");
 		}
 	}
 }

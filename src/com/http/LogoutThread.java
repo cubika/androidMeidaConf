@@ -7,6 +7,8 @@ import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.util.Constants;
+
 import android.content.Context;
 import android.net.ParseException;
 import android.os.Bundle;
@@ -18,16 +20,17 @@ public class LogoutThread extends Thread{
 	private Handler handler = null;
 	private String urlString = null;
 	private Map<String, String> params = null;
-	HttpUtils httpUtils;
-
+	
+	public LogoutThread(){
+		
+	}
+	
 	public LogoutThread(Handler handler) {
 	    this.handler = handler;
 	    }
 	
-	public void doStart(String urlString,Map<String,String> params,
-	        Context context){
-			this.urlString = urlString;
-		    this.params = params;
+	public void doStart(){
+			urlString = "http://"+Constants.registarIp+":8888/MediaConf/userLogin.do?method=logout";
 		    System.out.println("logout_dostart");
 		    this.start();
 		    
@@ -36,46 +39,18 @@ public class LogoutThread extends Thread{
 	public void run(){
 		Message msg = new Message();
         Bundle data = new Bundle();
-        System.out.println("logout_run");
-        try{
-        	System.out.println("logout_run_try");
-        	String result = httpUtils.sendPostMessage(urlString, params, "utf-8");
-        	System.out.println(result);
-        	try {
-        		System.out.println("logout_try");
-				JSONObject jsonObject = new JSONObject(result);
-				String flag = jsonObject.getString("result");					
-				System.out.println("flag");
-				
-				if(flag.equals("success"))
-				{	msg.what = 0x2102;	
-					System.out.println("logout");
-				}
-				else if(flag.equals("failure"))
-					msg.what = 0x2103;
-				
-        	} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-        }catch (ParseException e) {
-            msg.what=0x2103;
-            data.putString("info", "netWorkError");
+        
+        try {
+			HttpUtils.sendPostMessage(urlString, params, "utf-8");
+		} catch (IOException e) {
+			msg.what=0x2103;
+            data.putString("info", "注销时出现异常！");
             msg.setData(data);
-            e.printStackTrace();
-        } catch (ClientProtocolException e) {
-            msg.what=0x2103;
-            data.putString("info", "netWorkError");
-            msg.setData(data);
-            e.printStackTrace();
-        } catch (IOException e) {
-            msg.what=0x2103;
-            data.putString("info", "netWorkError");
-            msg.setData(data);
-            e.printStackTrace();
-        } finally {
-//            pdDialog.dismiss();
-            handler.sendMessage(msg);
-        }
+			e.printStackTrace();
+		}finally{
+        	if(handler!=null)
+        		handler.sendMessage(msg);
+		}
+        
 	}
 }

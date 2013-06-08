@@ -56,20 +56,20 @@ public class HttpThread extends Thread {
         Bundle data = new Bundle();
         try {
       //      boolean result = webServiceLogin();//执行网络服务请求，耗时操作。。。
-        	String result = httpUtils.sendPostMessage(urlString, params, "utf-8");
+        	String result = HttpUtils.sendPostMessage(urlString, params, "utf-8");
         	try {
 				JSONObject jsonObject = new JSONObject(result);
 				String logined = jsonObject.getString("logined");
 				String name = jsonObject.getString("name");
 				String pass = jsonObject.getString("pass");
 				String userId = jsonObject.getString("userId");
-			//	System.out.println("logined:"+logined+"  name:"+name+"  pass:"+pass+" userId:"+userId);
+				System.out.println("logined:"+logined+"  name:"+name+"  pass:"+pass+" userId:"+userId);
 				
 				data.putString("userId", userId);
 				if(logined.equals("success")){
-					msg.what=2; //登录失败,请稍候刷新页面重新登陆
+					msg.what=2; //已经登录过了,原来是刷新，现在是重新登录
 					data.putBoolean("login", false);
-					data.putString("info", "Error");
+					data.putString("info", "alreadyLogined");
 					msg.setData(data);
 				}else{
 					if(name.equals("true")){
@@ -97,7 +97,7 @@ public class HttpThread extends Thread {
            
         } catch (ParseException e) {
             msg.what=3;
-            data.putString("info", "netWorkError1:ParseExceptio");
+            data.putString("info", "netWorkError1:ParseException");
             msg.setData(data);
             e.printStackTrace();
         } catch (ClientProtocolException e) {

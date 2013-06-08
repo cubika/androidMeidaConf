@@ -47,6 +47,7 @@ import com.http.DisconnectUserThread;
 import com.http.HttpThread;
 import com.http.HttpUtils;
 import com.http.LogoutThread;
+import com.http.RegisterThread;
 import com.service.RefreshService;
 import com.util.Constants;
 
@@ -99,7 +100,6 @@ public class MediaConfActivity extends RtpAvTermAndroidActivity {
     };
 
     Timer timer = new Timer();
-    //轮询获取会议参数
 	TimerTask task = new TimerTask( ) {
 		public void run ( ) {		
 			String result = binder.getResult();			
@@ -414,7 +414,6 @@ public class MediaConfActivity extends RtpAvTermAndroidActivity {
 				constants.getMyAccount(), constants.getMyPasswd(),
 				constants.registarIp.getBytes(), constants.registarPort);
 
-		//启动注册线程，定期注册
 		new RegisterThread(sipTerm).start();
 
 	}
@@ -433,7 +432,7 @@ public class MediaConfActivity extends RtpAvTermAndroidActivity {
 	     params.put("userId", userId);
 	     System.out.println("logout_main1");
 	     LogoutThread logoutthread = new LogoutThread(handler);
-	     logoutthread.doStart("http://"+Constants.registarIp+":8888/MediaConf/userLogin.do?method=logout",params, MediaConfActivity.this);
+	     logoutthread.doStart();
 	}
 	
 //	@Override
@@ -680,33 +679,12 @@ public class MediaConfActivity extends RtpAvTermAndroidActivity {
 		if(debugLxj) System.out.println("退出会议完成");
 	}
 	
-}
-
-
-class RegisterThread extends Thread  
-{  
-	long term;  
-    public RegisterThread(long term) {  
-        this.term = term;       
-    }
-    @Override  
-    public void run() {    	    	
-    	
-    	while(true){
-			try {
-				boolean flag = SipTerm.doRegister(term, 120);
-				if(flag){			
-				}
-				else{	
-				//	System.out.println("Register called bad!");
-				}
-				Thread.sleep(60000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		}	
-    }
+	  @Override  
+	  protected void onDestroy() {
+		super.onDestroy();
+		System.out.println("logout in onDestory");
+		logout();
+		timer.cancel();
+	}
 }
 

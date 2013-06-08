@@ -14,12 +14,10 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         
-        
         <activity
-            android:name=".Login"
+            android:name="Login"
             android:label="@string/title_activity_login"          
-            android:screenOrientation="landscape"
-            >
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -27,12 +25,40 @@
         </activity>
         
         <activity
-            android:name="com.rongdian.MediaConfActivity"
+            android:name="MediaConfActivity"
             android:label="@string/title_activity_login"
             android:screenOrientation="landscape"
              >
-           
         </activity>
+        
+        <activity 
+            android:name="PhoneActivity"
+            android:screenOrientation="landscape">
+        </activity>
+        
+        <activity
+            android:name="com.activity.CreateConfActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <activity
+            android:name="com.activity.ChooseMemberActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <activity
+            android:name="com.activity.MyContactActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name="com.activity.MyGroupActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name="com.activity.ConfManageActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        
         
         <service android:name ="com.service.RefreshService" > 
             <intent-filter > 
