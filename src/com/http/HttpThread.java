@@ -1,13 +1,19 @@
 package com.http;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
@@ -56,7 +62,20 @@ public class HttpThread extends Thread {
         Bundle data = new Bundle();
         try {
       //      boolean result = webServiceLogin();//执行网络服务请求，耗时操作。。。
-        	String result = HttpUtils.sendPostMessage(urlString, params, "utf-8");
+        	
+        	
+        	//String result = HttpUtils.sendPostMessage(urlString, params, "utf-8");
+        	//由于之前的不支持带cookie，因此无法保存session，所以改用下面的调用
+        	List<NameValuePair> myList = new ArrayList<NameValuePair>();
+        	Iterator iterator=params.entrySet().iterator();
+        	while (iterator.hasNext()) { 
+        	    Entry entry = (Entry) iterator.next(); 
+        	    String key = (String) entry.getKey(); 
+        	    String val = (String) entry.getValue(); 
+        	    myList.add(new BasicNameValuePair(key, val)); 
+        	} 
+        	String result = HttpUtils.execRequest(urlString, myList);
+        	System.out.println("result is:"+result);
         	try {
 				JSONObject jsonObject = new JSONObject(result);
 				String logined = jsonObject.getString("logined");

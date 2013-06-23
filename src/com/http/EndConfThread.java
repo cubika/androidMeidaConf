@@ -37,10 +37,6 @@ public class EndConfThread extends Thread {
 			e.printStackTrace();
 		}finally{
 			System.out.println("结束会议结果："+result);
-			if(result!=null && result.equals("success"))
-				msg.what=0x2201;
-			else
-				msg.what=0x2202;
 			msg.setData(data);
         	if(handler!=null)
         		handler.sendMessage(msg);

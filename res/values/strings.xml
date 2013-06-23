@@ -29,4 +29,35 @@
  	<string name="start_speak">开始发言</string>
  	<string name="end_speak">停止发言</string>
  	<string name="manage_conf">会议管理</string>
+ 	<string name="username_hint">请输入登录账号</string>
+ 	<string name="password_hint">请输入密码</string>
+ 	<string name="serverip_hint">请输入服务器IP</string>
+ 	<string name="login_username">用户名:</string>
+ 	<string name="login_password">密  码:</string>
+ 	<string name="login_server">服务器IP:</string>
+ 	<string name="remember">记住密码</string>
+ 	<string name="modify">修改</string>
+ 	<string name="reset">重置</string>
+ 	<string name="old_pass">旧密码:</string>
+ 	<string name="new_pass">新密码:</string>
+ 	<string name="confirm_new_pass">确认密码:</string>
+ 	<string name="add_fg">增加分组</string>
+ 	<string name="rename_fg">重命名分组</string>
+ 	<string name="add_fd">添加好友</string>
+ 	<string name="add_group_hint">请输入分组名称</string>
+ 	<string name="friend_hint">请输入联系人姓名</string>
+ 	<string name="reload">重新加载</string>
+ 	<string name="search_friend">查找联系人</string>
+ 	<string name="add_gg">增加群组</string>
+ 	<string name="add_group">增加群组</string>
+ 	<string name="group_mem">群组成员</string><string name="group_name">群组名称</string>
+ 	
+ 	<string name="group_hint">请输入联系人姓名</string>
+ 	<string name="group_new_hint">请输入新建群组名称</string>
+ 	<string name="delete">删除</string>
+ 	<string name="username">用户名</string>
+ 	<string name="userid">用户ID</string>
+ 	<string name="select_all">全选</string>
+ 	<string name="clear_all">全不选</string>
+ 	<string name="add_contact">增加联系人</string>
 </resources>

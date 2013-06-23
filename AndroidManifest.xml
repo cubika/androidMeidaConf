@@ -59,6 +59,31 @@
             android:screenOrientation="portrait">
         </activity>
         
+        <activity
+            android:name="com.activity.AccountManageActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        
+       <activity
+            android:name="com.activity.ContactManageActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <activity
+            android:name="com.activity.AddFriendActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        
+       <activity
+            android:name="com.activity.AddGroupActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        
+       <activity
+            android:name="com.activity.AddContactActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        
         
         <service android:name ="com.service.RefreshService" > 
             <intent-filter > 

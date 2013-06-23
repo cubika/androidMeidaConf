@@ -54,7 +54,7 @@ public class TableAdapter extends BaseAdapter {
 	 * TableRowView 实现表格行的样式
 	 */
 	class TableRowView extends LinearLayout {
-		public TableRowView(Context context, final TableRow tableRow) {
+		public TableRowView(final Context context, final TableRow tableRow) {
 			super(context);
 
 			this.setOrientation(LinearLayout.HORIZONTAL);
@@ -67,22 +67,30 @@ public class TableAdapter extends BaseAdapter {
 					case 4:
 						Toast.makeText(
 								getContext(),
-								"你选择了将用户" + tableRow.getCellValue(0).value
+								"你选择了将用户" + tableRow.getCellValue(1).value
 										+ "强制离开", Toast.LENGTH_SHORT).show();
+						GenericTask disconnectTask=new GenericTask(context);
+						disconnectTask.execute("http://"+ Constants.registarIp+":8888/MediaConf/disconnectUser.do?method=kick&confId="
+											+ConfManageActivity.confId+"&userId="
+											+tableRow.getCellValue(0).value);
 						break;
 					case 5:
 						Toast.makeText(getContext(),
-								"你选择了呼起用户" + tableRow.getCellValue(0).value,
+								"你选择了呼起用户" + tableRow.getCellValue(1).value,
 								Toast.LENGTH_SHORT).show();
+						GenericTask callupTask=new GenericTask(context);
+						callupTask.execute("http://"+ Constants.registarIp+":8888/MediaConf/callUser.do?confId="
+											+ConfManageActivity.confId+"&userId="
+											+tableRow.getCellValue(0).value);
 						break;
 					case 6:
 						if(tableRow.getCellValue(2).value.toString().equals("OffLine")){
-							Toast.makeText(getContext(),"改用户不在线，不能设置分屏！", Toast.LENGTH_SHORT).show();
+							Toast.makeText(getContext(),"该用户不在线，不能设置分屏！", Toast.LENGTH_SHORT).show();
 							break;
 						}
 						Toast.makeText(
 								getContext(),
-								"你选择了为用户" + tableRow.getCellValue(0).value
+								"你选择了为用户" + tableRow.getCellValue(1).value
 										+ "设置三号分屏", Toast.LENGTH_SHORT).show();
 						SetThreeScreenTask threeTask = new SetThreeScreenTask();
 						threeTask.execute("http://"
@@ -93,12 +101,12 @@ public class TableAdapter extends BaseAdapter {
 						break;
 					case 7:
 						if(tableRow.getCellValue(2).value.toString().equals("OffLine")){
-							Toast.makeText(getContext(),"改用户不在线，不能设置分屏！", Toast.LENGTH_SHORT).show();
+							Toast.makeText(getContext(),"该用户不在线，不能设置分屏！", Toast.LENGTH_SHORT).show();
 							break;
 						}
 						Toast.makeText(
 								getContext(),
-								"你选择了为用户" + tableRow.getCellValue(0).value
+								"你选择了为用户" + tableRow.getCellValue(1).value
 										+ "设置四号分屏", Toast.LENGTH_SHORT).show();
 						SetFourScreenTask fourTask = new SetFourScreenTask();
 						fourTask.execute("http://"
@@ -109,12 +117,12 @@ public class TableAdapter extends BaseAdapter {
 						break;
 					case 8:
 						if(tableRow.getCellValue(2).value.toString().equals("OffLine")){
-							Toast.makeText(getContext(),"改用户不在线，不能设置分屏！", Toast.LENGTH_SHORT).show();
+							Toast.makeText(getContext(),"该用户不在线，不能设置分屏！", Toast.LENGTH_SHORT).show();
 							break;
 						}
 						Toast.makeText(
 								getContext(),
-								"你选择了为用户" + tableRow.getCellValue(0).value
+								"你选择了为用户" + tableRow.getCellValue(1).value
 										+ "设置五号分屏", Toast.LENGTH_SHORT).show();
 						SetFiveScreenTask fiveTask = new SetFiveScreenTask();
 						fiveTask.execute("http://"
@@ -125,12 +133,12 @@ public class TableAdapter extends BaseAdapter {
 						break;
 					case 9:
 						if(tableRow.getCellValue(2).value.toString().equals("OffLine")){
-							Toast.makeText(getContext(),"改用户不在线，不能设置分屏！", Toast.LENGTH_SHORT).show();
+							Toast.makeText(getContext(),"该用户不在线，不能设置分屏！", Toast.LENGTH_SHORT).show();
 							break;
 						}
 						Toast.makeText(
 								getContext(),
-								"你选择了为用户" + tableRow.getCellValue(0).value
+								"你选择了为用户" + tableRow.getCellValue(1).value
 										+ "设置六号分屏", Toast.LENGTH_SHORT).show();
 						SetSixScreenTask sixTask = new SetSixScreenTask();
 						sixTask.execute("http://"
@@ -155,9 +163,11 @@ public class TableAdapter extends BaseAdapter {
 					textCell.setOnClickListener(clickListener);
 					textCell.setLines(1);
 					textCell.setTag(i);
+					textCell.setTextSize(16);
+					textCell.setPadding(0, 10, 0, 10);
 					textCell.setGravity(Gravity.CENTER);
 					textCell.setBackgroundColor(Color.WHITE);// 背景白色
-					textCell.setTextColor(Color.BLACK);// 字体白色
+					textCell.setTextColor(Color.BLACK);// 字体黑色
 					textCell.setText(String.valueOf(tableCell.value));
 					addView(textCell, layoutParams);
 				} else if (tableCell.type == TableCell.IMAGE) {// 如果格单元是图像内容
@@ -166,6 +176,7 @@ public class TableAdapter extends BaseAdapter {
 					imgCell.setOnClickListener(clickListener);
 					imgCell.setImageResource((Integer) tableCell.value);
 					imgCell.setTag(i);
+					imgCell.setPadding(0, 10, 0, 10);
 					addView(imgCell, layoutParams);
 				}
 			}

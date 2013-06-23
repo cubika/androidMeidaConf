@@ -1,5 +1,6 @@
 package com.rongdian;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -29,6 +31,7 @@ import android.widget.TableLayout;
 import android.widget.Toast;
 
 import com.http.HttpThread;
+import com.http.HttpUtils;
 import com.http.LogoutThread;
 import com.util.MyToast;
 import com.util.Constants;
@@ -42,6 +45,8 @@ public class Login extends Activity {
 	private EditText username_input;
 	private EditText userpassword_input;
 	private EditText remoteIp;
+	private Builder builder;
+	private AlertDialog dialog;
 	SharedPreferences sp = null;
 	
 	ImageButton user_joinConf_btn, user_login_btn, user_register_btn;
@@ -65,7 +70,9 @@ public class Login extends Activity {
 		user_register_btn = (ImageButton) findViewById(R.id.user_register_btn);
 	
 		//创建对话框，并使用自定义的主题
-		final Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogCustom1));
+		//final Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogCustom1));
+		builder = new AlertDialog.Builder(this);
+		builder.setInverseBackgroundForced(true);
 	//	LoadUserDate();
 		
 		OnClickListener listener = new OnClickListener() {
@@ -100,8 +107,9 @@ public class Login extends Activity {
 								}
 							});
 					// 创建并显示对话框
-					builder.show();
-				} 
+					dialog=builder.create();
+					dialog.show();
+				}
 				//用户登录
 				else if (id == R.id.user_login_btn)
 				{
@@ -109,8 +117,10 @@ public class Login extends Activity {
 					builder.setTitle("用户登录");				
 					
 
-					final TableLayout loginForm = (TableLayout) getLayoutInflater().inflate(R.layout.user_login_form, null);// 装载/res/layout/user_login_form.xml页面布局
-					builder.setView(loginForm);// 设置对话框显示的view对象
+					//final TableLayout loginForm = (TableLayout) getLayoutInflater().inflate(R.layout.user_login_form, null);// 装载/res/layout/user_login_form.xml页面布局
+					View loginScrollView=getLayoutInflater().inflate(R.layout.user_login_form, null);
+					final TableLayout loginForm=(TableLayout) loginScrollView.findViewById(R.id.user_login_table);
+					builder.setView(loginScrollView);// 设置对话框显示的view对象
 					// 为对话框设置一个“确定”按钮
 					username_input = (EditText) loginForm.findViewById(R.id.username_input);
 					userpassword_input = (EditText) loginForm.findViewById(R.id.userpassword_input);
@@ -128,8 +138,8 @@ public class Login extends Activity {
 							new DialogInterface.OnClickListener() {
 						
 								@Override
-								public void onClick(DialogInterface arg0,
-										int arg1) {
+								public void onClick(DialogInterface dialog,
+										int which) {
 								//	showDialog("你选择了确定");  
 
 									// TODO Auto-generated method stub
@@ -172,7 +182,6 @@ public class Login extends Activity {
 										params.put("name", username);
 										params.put("pass", password);
 										params.put("isRemStatus", "false");
-										System.out.println("http://"+Constants.registarIp+":8888/MediaConf/userLogin.do?method=login");
 
 										//获取了参数，保存了参数之后，启用新的线程发送注册请求，
 										// 在工作线程中执行耗时任务，防止UI线程阻塞
@@ -180,7 +189,7 @@ public class Login extends Activity {
 										// 10.0.2.2为电脑对于模拟器而言的IP地址。
 										httpThread.doStart("http://"+Constants.registarIp+":8888/MediaConf/userLogin.do?method=login",params, Login.this);
 									//	httpThread.doStart("http://10.108.167.10:8888/MediaConf/userLogin.do?method=login",params,Login.this);
-
+										dialog.dismiss();
 									}
 									
 								}
@@ -192,12 +201,12 @@ public class Login extends Activity {
 								@Override
 								public void onClick(DialogInterface dialog,
 										int which) {
-									// TODO Auto-generated method stub
-
+									dialog.dismiss();
 								}
 							});
 					// 创建并显示对话框
-					builder.show();
+					dialog=builder.create();
+					dialog.show();
 				} 
 				//创建账号
 				else// create
@@ -228,7 +237,8 @@ public class Login extends Activity {
 								}
 							});
 					// 创建并显示对话框
-					builder.show();
+					dialog=builder.create();
+					dialog.show();
 				}
 			}
 
@@ -295,4 +305,12 @@ public class Login extends Activity {
 		}
 		return false;
 	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if(dialog!=null)
+			dialog.dismiss();
+	}
+	
 }

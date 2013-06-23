@@ -24,10 +24,12 @@ import android.os.Message;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
@@ -35,24 +37,26 @@ import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.activity.AccountManageActivity;
 import com.activity.ConfManageActivity;
+import com.activity.ContactManageActivity;
 import com.activity.CreateConfActivity;
+import com.activity.GenericTask;
 import com.http.DisconnectUserThread;
 import com.http.EndConfThread;
+import com.http.GetUserInfoTask;
 import com.http.HttpUtils;
 import com.http.LogoutThread;
 import com.http.RegisterThread;
 import com.util.Constants;
 
 /*
- * 1.解决注销的问题 #
- * 2.菜单按键响应
- * 3.销毁资源
- * 4.必须进来之后再建会
- * 5.listview可不可以复用？
- * 6.alertDialog太宽了
+ * 1.改菜单
+ * 2.改注销不成功的问题
+ * 3.改消息的显示，如json消息转化为中文，以及有些耗时操作要加进度提示等等
  */
 public class PhoneActivity extends RtpAvTermAndroidActivity {
 
@@ -64,7 +68,7 @@ public class PhoneActivity extends RtpAvTermAndroidActivity {
 	AlertDialog menuDialog; // menu菜单dialog
 	GridView menuGrid; // 放置菜单内容的gridView
 	View menuView;
-	public static String UserName;
+	public static String HostName;
 	public static ListView confLV, participantLV;// 会议信息和参会人员的Listview
 	// ArrayList<HashMap<String, String>> mylist = new ArrayList<HashMap<String,
 	// String>>();
@@ -191,18 +195,6 @@ public class PhoneActivity extends RtpAvTermAndroidActivity {
 				break;
 			case 0x2103:
 				Toast.makeText(PhoneActivity.this, "退出登录失败", Toast.LENGTH_LONG).show();
-				break;
-			case 0x2201:
-				Toast.makeText(PhoneActivity.this, "结束会议成功", Toast.LENGTH_LONG).show();
-				break;
-			case 0x2202:
-				Toast.makeText(PhoneActivity.this, "结束会议失败", Toast.LENGTH_LONG).show();
-				break;
-			case 0x2203:
-				Toast.makeText(PhoneActivity.this, "申请发言成功", Toast.LENGTH_LONG).show();
-				break;
-			case 0x2204:
-				Toast.makeText(PhoneActivity.this, "申请发言失败", Toast.LENGTH_LONG).show();
 				break;
 			}
 		}
@@ -356,6 +348,14 @@ public class PhoneActivity extends RtpAvTermAndroidActivity {
 		menuDialog = new AlertDialog.Builder(new ContextThemeWrapper(this,
 				android.R.style.Theme_Translucent_NoTitleBar))
 				.setInverseBackgroundForced(true).create();
+		//设置对话框的位置为正中央 
+		WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+		lp.copyFrom(menuDialog.getWindow().getAttributes());
+		lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
+		lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+		lp.gravity=Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL;
+		menuDialog.getWindow().setAttributes(lp);
+
 		menuDialog.setView(menuView);
 		// 如果按了菜单键，就取消菜单
 		menuDialog.setOnKeyListener(new OnKeyListener() {
@@ -369,11 +369,11 @@ public class PhoneActivity extends RtpAvTermAndroidActivity {
 
 		Resources res = getResources();
 		String[] menuNames = res.getStringArray(R.array.items);
-		int[] menuImages = { R.drawable.ic_launcher, R.drawable.ic_launcher,
-				R.drawable.ic_launcher, R.drawable.ic_launcher,
-				R.drawable.ic_launcher, R.drawable.ic_launcher,
-				R.drawable.ic_launcher, R.drawable.ic_launcher,
-				R.drawable.ic_launcher };
+		int[] menuImages = { R.drawable.create_conf, R.drawable.quit_conf,
+				R.drawable.conf_manage, R.drawable.conf_info,
+				R.drawable.participant, R.drawable.account,
+				R.drawable.contact, R.drawable.doc,
+				R.drawable.exit_app };
 
 		menuGrid = (GridView) menuView.findViewById(R.id.gridview);
 		// 为菜单内容绑定数据
@@ -417,10 +417,36 @@ public class PhoneActivity extends RtpAvTermAndroidActivity {
 						bundle2.putString("userId", userId);
 						bundle2.putString("confId", confId.toString());
 						cmIntent.putExtras(bundle2);
-						System.out.println("开始进入会议管理界面：");
+						System.out.println("开始进入会议管理界面");
 						startActivity(cmIntent);
 					}else{
 						System.out.println("会议主席："+chairmanId+" userId:"+userId);
+						AlertDialog.Builder builder = new AlertDialog.Builder(PhoneActivity.this);
+						AlertDialog dialog=
+								builder.setTitle("申请发言").setMessage("您不是主席，只能申请发言。\n 您确定要申请发言吗？")
+								.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									GenericTask applyTask=new GenericTask(PhoneActivity.this);
+									applyTask.execute("http://"+ Constants.registarIp+":8888/MediaConf/applySpeaking.do?confId="
+											+confId+"&userId="+userId);
+									dialog.dismiss();
+									
+								}
+								
+							}).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									dialog.dismiss();
+								}
+								
+							}).show();
+						TextView messageView = (TextView)dialog.findViewById(android.R.id.message);
+						messageView.setGravity(Gravity.CENTER);
 					}
 //					AlertDialog.Builder screenBuilder=new AlertDialog.Builder(PhoneActivity.this);
 //					screenBuilder.setTitle("设置分屏");
@@ -442,19 +468,7 @@ public class PhoneActivity extends RtpAvTermAndroidActivity {
 //					speakParams.put("userId",userId);
 //					speakThread.doStart(speakParams);
 					break;
-				case 3: //呼起用户
-					if (confId == -1) {
-						Toast.makeText(PhoneActivity.this, "您还没有加入会议，无法呼起用户",
-								Toast.LENGTH_LONG).show();
-						break;
-					}
-					if(chairmanId!=userId){
-						Toast.makeText(PhoneActivity.this, "您不是会议主席，不能呼起用户",
-								Toast.LENGTH_LONG).show();
-						break;
-					}
-					break;
-				case 4: // 查看会议信息
+				case 3: // 查看会议信息
 					Log.v("menuClick", confId + ":" + confName);
 					if (confId == -1) {
 						Toast.makeText(PhoneActivity.this, "您还没有加入会议，无法查看会议信息",
@@ -476,9 +490,9 @@ public class PhoneActivity extends RtpAvTermAndroidActivity {
 							confDuration, chairmanName };
 					confLV.setAdapter(getMessageAdapter(confMessageTitles,
 							confMessageContents));
-					builder1.create().show();
+					builder1.show();
 					break;
-				case 5: // 查看与会人员信息
+				case 4: // 查看与会人员信息
 					if (confId == -1) {
 						Toast.makeText(PhoneActivity.this, "您还没有加入会议，无法查看参会人员",
 								Toast.LENGTH_LONG).show();
@@ -497,13 +511,28 @@ public class PhoneActivity extends RtpAvTermAndroidActivity {
 					participantLV.setAdapter(getMessageAdapter(
 							participantNames.toArray(new String[] {}),
 							participantIDs.toArray(new String[] {})));
-					builder2.create().show();
+					builder2.show();
 					break;
-				case 6: // 账户管理
+				case 5: // 账户管理
+					Intent accountIntent = new Intent(PhoneActivity.this,AccountManageActivity.class);
+					Bundle accountBundle = new Bundle();
+					accountBundle.putString("userID", userId);
+					accountIntent.putExtras(accountBundle);
+					startActivity(accountIntent);
 					break;
-				case 7: // 联系人管理
+				case 6: // 联系人管理
+					Intent contactIntent = new Intent(PhoneActivity.this,ContactManageActivity.class);
+					Bundle contactBundle = new Bundle();
+					contactBundle.putString("userID", userId);
+					contactIntent.putExtras(contactBundle);
+					startActivity(contactIntent);
+					break;
+				case 7: // 数据共享
+					Toast.makeText(PhoneActivity.this, "敬请期待。。。", Toast.LENGTH_SHORT).show();
 					break;
 				case 8: //退出程序
+					quitApp();
+					break;
 				}
 
 			}
@@ -516,10 +545,10 @@ public class PhoneActivity extends RtpAvTermAndroidActivity {
 		Intent intent = getIntent();
 		Bundle data = intent.getExtras();
 		String myAccount = data.getString("myAccount");
-		UserName = myAccount;
+		HostName = myAccount;
 		String passWord = data.getString("password");
 		userId = data.getString("userId");
-		System.out.println("get Account:" + UserName + "@" + userId);
+		System.out.println("get Account:" + HostName + "@" + userId);
 		constants = new Constants(myAccount.getBytes(), passWord.getBytes());
 
 		// 启动线程，每2秒获取一次会议信息更新结果
@@ -532,6 +561,9 @@ public class PhoneActivity extends RtpAvTermAndroidActivity {
 
 		// 启动注册线程，定期注册
 		new RegisterThread(sipTerm).start();
+		
+		//获取用户的信息
+		new GetUserInfoTask().execute("http://"+ Constants.registarIp+":8888/MediaConf/user/userInfo1.jsp");
 
 	}
 
@@ -567,67 +599,70 @@ public class PhoneActivity extends RtpAvTermAndroidActivity {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_HOME
 				|| keyCode == KeyEvent.KEYCODE_BACK) {
-			if (confId != -1) {
-				new AlertDialog.Builder(new ContextThemeWrapper(this,
-						R.style.AlertDialogCustom))
-						.setTitle("退出系统")
-						.setMessage("正在会议中，请确认是否要退出系统？")
-						.setIcon(android.R.drawable.ic_dialog_info)
-						.setPositiveButton("确定",
-								new DialogInterface.OnClickListener() {
-									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
-										// 点击“确认”后的操作，退出系統的相关操作
-										quitConf();
-										timer.cancel();
-										if (sipTerm > 0)
-											SipTerm.deleteTerm(sipTerm);
-										logout();
-										finish();
-									}
-								})
-						.setNegativeButton("取消",
-								new DialogInterface.OnClickListener() {
-
-									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
-										// 点击“返回”后的操作,这里不设置没有任何操作
-									}
-								}).show();
-			} else {
-				new AlertDialog.Builder(new ContextThemeWrapper(this,
-						R.style.AlertDialogCustom))
-						.setTitle("确定退出吗？")
-						.setIcon(android.R.drawable.ic_dialog_info)
-						.setPositiveButton("确定",
-								new DialogInterface.OnClickListener() {
-									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
-										// 点击“确认”后的操作，退出系統的相关操作
-										timer.cancel();
-										if (sipTerm > 0)
-											SipTerm.deleteTerm(sipTerm);
-										logout();
-										finish();
-									}
-								})
-						.setNegativeButton("取消",
-								new DialogInterface.OnClickListener() {
-
-									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
-										// 点击“返回”后的操作,这里不设置没有任何操作
-									}
-								}).show();
-			}
+			quitApp();
 		}
 		return super.onKeyDown(keyCode, event);
 	}
 
+	public void quitApp(){
+		if (confId != -1) {
+			new AlertDialog.Builder(new ContextThemeWrapper(this,
+					R.style.AlertDialogCustom))
+					.setTitle("退出系统")
+					.setMessage("正在会议中，请确认是否要退出系统？")
+					.setIcon(android.R.drawable.ic_dialog_info)
+					.setPositiveButton("确定",
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									// 点击“确认”后的操作，退出系統的相关操作
+									quitConf();
+									timer.cancel();
+									if (sipTerm > 0)
+										SipTerm.deleteTerm(sipTerm);
+									logout();
+									finish();
+								}
+							})
+					.setNegativeButton("取消",
+							new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									// 点击“返回”后的操作,这里不设置没有任何操作
+								}
+							}).show();
+		} else {
+			new AlertDialog.Builder(new ContextThemeWrapper(this,
+					R.style.AlertDialogCustom))
+					.setTitle("确定退出吗？")
+					.setIcon(android.R.drawable.ic_dialog_info)
+					.setPositiveButton("确定",
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									// 点击“确认”后的操作，退出系統的相关操作
+									timer.cancel();
+									if (sipTerm > 0)
+										SipTerm.deleteTerm(sipTerm);
+									logout();
+									finish();
+								}
+							})
+					.setNegativeButton("取消",
+							new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									// 点击“返回”后的操作,这里不设置没有任何操作
+								}
+							}).show();
+		}
+	}
 	/**
 	 * 实现父类的抽象方法，获取本地预览界面构件。
 	 * 
@@ -789,6 +824,11 @@ public class PhoneActivity extends RtpAvTermAndroidActivity {
 		System.out.println("remoteVideoPayload = "
 				+ mediaInfo.getByte("remoteVideoPayload"));
 		
+		try {
+			Thread.sleep(5000);		//休息5s，等待远端组件准备好
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		boolean res = ravtOpenRemoteVideoPreview(mediaInfo
 				.getShort("remoteVideoType"));
 		if (res)

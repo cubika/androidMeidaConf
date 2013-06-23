@@ -1,21 +1,41 @@
 package com.http;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 
 import android.util.Log;
 
 public class HttpUtils {
 	
+	public static String jSessionID;
 	public HttpUtils() {
 		// TODO Auto-generated constructor stub
 	}	 
@@ -47,7 +67,8 @@ public class HttpUtils {
 			httpConn.setRequestMethod("POST");   // 设置URL请求方法
 			httpConn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 			httpConn.setRequestProperty("Charset", "UTF-8");
-			httpConn.setRequestProperty("Connection", "Keep-Alive");  
+			httpConn.setRequestProperty("Connection", "Keep-Alive");
+			httpConn.setRequestProperty("Cookie", "JSESSIONID="+jSessionID);//session也是根据cookie来实现的呦
 			
 			byte[] mydata = buffer.toString().getBytes();
 			httpConn.setRequestProperty("Content-Length",String.valueOf(mydata.length));
@@ -89,6 +110,51 @@ public class HttpUtils {
 			}
 		}
 		return result;
+	}
+	
+	
+	public static String getSourceCode(String url) throws IOException{
+		System.out.println("get source code from:"+url);
+		HttpClient client = new DefaultHttpClient();
+		HttpGet request = new HttpGet(url);
+		request.setHeader("Cookie", "JSESSIONID="+jSessionID);
+		HttpResponse response = client.execute(request);
+
+		String html = "";
+		InputStream in = response.getEntity().getContent();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+		StringBuilder str = new StringBuilder();
+		String line = null;
+		while((line = reader.readLine()) != null)
+		{
+			if(line.contains("Ext.onReady"))
+				break;
+		    str.append(line);
+		}
+		in.close();
+		html = str.toString();
+		return html;
+	}
+	
+	public static String execRequest(String urlPath,List<NameValuePair> params) throws IOException{
+		DefaultHttpClient httpClient = new DefaultHttpClient();
+		HttpEntity httpEntity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
+		HttpPost httpPost = new HttpPost(urlPath);
+		httpPost.setEntity(httpEntity);
+		HttpResponse httpResponse = httpClient.execute(httpPost);
+		String ret=null;
+		if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            HttpEntity entity = httpResponse.getEntity();
+            ret = EntityUtils.toString(entity);
+            CookieStore mCookieStore = httpClient.getCookieStore();
+            List<Cookie> cookies = mCookieStore.getCookies();
+            for (int i = 0; i < cookies.size(); i++) {
+            	System.out.println(cookies.get(i).getName()+":"+cookies.get(i).getValue());
+            	if(cookies.get(i).getName().equals("JSESSIONID"))
+            		jSessionID=cookies.get(i).getValue();
+            }
+		}
+		return ret;
 	}
 
 	
