@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <Preference
+        android:key="home"
+        android:title="首页" android:layout="@layout/pre_layout" android:icon="@drawable/home"/>
+    <Preference
+        android:key="createConf"
+        android:title="创建会议" android:layout="@layout/pre_layout" android:icon="@drawable/create_conf"/>
+    <Preference
+        android:key="confManage"
+        android:title="会议管理" android:layout="@layout/pre_layout" android:icon="@drawable/conf_manage"/>
+    <Preference
+        android:key="accountManage"
+        android:title="账户管理" android:layout="@layout/pre_layout" android:icon="@drawable/account"/>
+    <Preference
+        android:key="contactManage"
+        android:title="联系人管理" android:layout="@layout/pre_layout" android:icon="@drawable/contact"/>
+
+</PreferenceScreen>
