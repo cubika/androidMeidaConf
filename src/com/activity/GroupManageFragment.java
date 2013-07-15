@@ -53,7 +53,7 @@ public class GroupManageFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-
+		Log.i("GroupManageFragment","onCreateView");
 		View V = inflater.inflate(R.layout.group_manage, container, false);
 		groupELV = (ExpandableListView) V.findViewById(R.id.groupELV);
 		addGroupBTN=(Button)V.findViewById(R.id.addGroupGroup);
@@ -421,6 +421,9 @@ public class GroupManageFragment extends Fragment {
 		mGroupGroupData.clear();
 		mGroupChildIDS.clear();
 		mGroupGroupIDS.clear();
+		//第一次进入的时候，数据源是空的，ListView绑定到了它上面；
+		//第二次进入的时候，ListView相当与重新建了一个，但是数据源已经不是空的了，然后你又重新加载，将数据源清空，但是没有通知ListView，因此会报错		
+		groupAdapter.notifyDataSetChanged(); 
 		new GetgroupTask().execute("http://" + Constants.registarIp
 				+ ":8888/MediaConf/addMember.do?userID="
 				+ ContactManageActivity.userId+"&node=b");
@@ -429,6 +432,7 @@ public class GroupManageFragment extends Fragment {
 	@Override
 	public void onStart(){
 		super.onStart();
+		Log.i("GroupManageFragment","onStart");
 		reload();
 	}
 

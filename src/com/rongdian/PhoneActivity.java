@@ -13,7 +13,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
@@ -29,10 +28,12 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -137,13 +138,17 @@ public class PhoneActivity extends RtpAvTermAndroidActivity {
 					// 通知adapter会议信息数据源更新
 					((BaseAdapter) confLV.getAdapter()).notifyDataSetChanged();
 
+			case 0x1239: //与会人员有更新
 				participantNames.clear();
 				participantIDs.clear();
 				JSONObject jsonObject;
-				JSONArray jsonArray = null;
-				Log.v("handler","participants:"	+ message.getData().getString("paticipants"));
+		        JSONArray jsonArray = null;
+		        String parString=message.getData().getString("participants");
+		        Log.v("handler","participants:"	+ parString);
+		        if(parString==null)
+		        	break;
 				try {
-					jsonObject = new JSONObject(message.getData().getString("paticipants"));
+					jsonObject = new JSONObject(parString);
 					jsonArray = jsonObject.getJSONArray("rows");
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -265,7 +270,7 @@ public class PhoneActivity extends RtpAvTermAndroidActivity {
 							Log.e("refreshData", "get participants error");
 							e.printStackTrace();
 						}
-						msg.what = 0x1238;
+						msg.what = 0x1239;
 					}
 					// 弹出提示框
 					if (showIndex >= 0) {
@@ -369,10 +374,9 @@ public class PhoneActivity extends RtpAvTermAndroidActivity {
 
 		Resources res = getResources();
 		String[] menuNames = res.getStringArray(R.array.items);
-		int[] menuImages = { R.drawable.create_conf, R.drawable.quit_conf,
-				R.drawable.conf_manage, R.drawable.conf_info,
+		int[] menuImages = { R.drawable.create_conf, R.drawable.conf_manage, R.drawable.conf_info,
 				R.drawable.participant, R.drawable.account,
-				R.drawable.contact, R.drawable.doc,
+				R.drawable.contact, R.drawable.doc,R.drawable.quit_conf,
 				R.drawable.exit_app };
 
 		menuGrid = (GridView) menuView.findViewById(R.id.gridview);
@@ -394,18 +398,7 @@ public class PhoneActivity extends RtpAvTermAndroidActivity {
 					intent.putExtras(bundle);
 					startActivity(intent);
 					break;
-				case 1: //退出会议
-					if (confId == -1) {
-						Toast.makeText(PhoneActivity.this, "您还没有加入会议，无法退出会议",
-								Toast.LENGTH_LONG).show();
-						break;
-					}
-					EndConfThread endThread=new EndConfThread(handler);
-					Map<String,String> endParams=new HashMap<String,String>();
-					endParams.put("confId", confId.toString());
-					endThread.doStart(endParams);
-					break;
-				case 2: //会议管理
+				case 1: //会议管理
 					if (confId == -1) {
 						Toast.makeText(PhoneActivity.this, "您还没有加入会议，无法进行会议管理",
 								Toast.LENGTH_LONG).show();
@@ -468,7 +461,7 @@ public class PhoneActivity extends RtpAvTermAndroidActivity {
 //					speakParams.put("userId",userId);
 //					speakThread.doStart(speakParams);
 					break;
-				case 3: // 查看会议信息
+				case 2: // 查看会议信息
 					Log.v("menuClick", confId + ":" + confName);
 					if (confId == -1) {
 						Toast.makeText(PhoneActivity.this, "您还没有加入会议，无法查看会议信息",
@@ -492,7 +485,7 @@ public class PhoneActivity extends RtpAvTermAndroidActivity {
 							confMessageContents));
 					builder1.show();
 					break;
-				case 4: // 查看与会人员信息
+				case 3: // 查看与会人员信息
 					if (confId == -1) {
 						Toast.makeText(PhoneActivity.this, "您还没有加入会议，无法查看参会人员",
 								Toast.LENGTH_LONG).show();
@@ -513,22 +506,33 @@ public class PhoneActivity extends RtpAvTermAndroidActivity {
 							participantIDs.toArray(new String[] {})));
 					builder2.show();
 					break;
-				case 5: // 账户管理
+				case 4: // 账户管理
 					Intent accountIntent = new Intent(PhoneActivity.this,AccountManageActivity.class);
 					Bundle accountBundle = new Bundle();
 					accountBundle.putString("userID", userId);
 					accountIntent.putExtras(accountBundle);
 					startActivity(accountIntent);
 					break;
-				case 6: // 联系人管理
+				case 5: // 联系人管理
 					Intent contactIntent = new Intent(PhoneActivity.this,ContactManageActivity.class);
 					Bundle contactBundle = new Bundle();
 					contactBundle.putString("userID", userId);
 					contactIntent.putExtras(contactBundle);
 					startActivity(contactIntent);
 					break;
-				case 7: // 数据共享
+				case 6: // 数据共享
 					Toast.makeText(PhoneActivity.this, "敬请期待。。。", Toast.LENGTH_SHORT).show();
+					break;
+				case 7: //退出会议
+					if (confId == -1) {
+						Toast.makeText(PhoneActivity.this, "您还没有加入会议，无法退出会议",
+								Toast.LENGTH_LONG).show();
+						break;
+					}
+					EndConfThread endThread=new EndConfThread(handler);
+					Map<String,String> endParams=new HashMap<String,String>();
+					endParams.put("confId", confId.toString());
+					endThread.doStart(endParams);
 					break;
 				case 8: //退出程序
 					quitApp();
@@ -564,7 +568,8 @@ public class PhoneActivity extends RtpAvTermAndroidActivity {
 		
 		//获取用户的信息
 		new GetUserInfoTask().execute("http://"+ Constants.registarIp+":8888/MediaConf/user/userInfo1.jsp");
-
+		
+		
 	}
 
 	public void quitConf() {
@@ -824,11 +829,6 @@ public class PhoneActivity extends RtpAvTermAndroidActivity {
 		System.out.println("remoteVideoPayload = "
 				+ mediaInfo.getByte("remoteVideoPayload"));
 		
-		try {
-			Thread.sleep(5000);		//休息5s，等待远端组件准备好
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 		boolean res = ravtOpenRemoteVideoPreview(mediaInfo
 				.getShort("remoteVideoType"));
 		if (res)
@@ -929,10 +929,7 @@ public class PhoneActivity extends RtpAvTermAndroidActivity {
 		return false;// 返回为true 则显示系统menu
 	}
 	
-	@Override
-	public void onPause(){
-		super.onPause();
-		Log.v("PhoneActivity","onPause");
+	public void closeAll(){
 		ravtCloseRemoteAudio();
 		ravtCloseLocalAudio();
 //		ravtCloseAudioSession();
@@ -942,13 +939,20 @@ public class PhoneActivity extends RtpAvTermAndroidActivity {
 		ravtCloseLocalVideoOutput();
 //		ravtCloseVideoSession();
 	}
+	@Override
+	public void onPause(){
+		super.onPause();
+		Log.v("PhoneActivity","onPause");
+		closeAll();
+		
+	}
 	
 	@Override
 	public void onResume(){
 		super.onResume();
 		Log.v("PhoneActivity", "onResume");
 		if(confId!=-1 && saveMediaBundle!=null){
-			processJoinConfOK(saveMediaBundle);
+				processJoinConfOK(saveMediaBundle);
 		}
 	}
 }

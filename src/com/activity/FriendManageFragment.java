@@ -54,7 +54,7 @@ public class FriendManageFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-
+		Log.v("FriendManageFragment","onCreateView");
 		View V = inflater.inflate(R.layout.friend_manage, container, false);
 		friendELV = (ExpandableListView) V.findViewById(R.id.friendELV);
 		addGroupBTN=(Button)V.findViewById(R.id.addFriendGroup);
@@ -383,6 +383,7 @@ public class FriendManageFragment extends Fragment {
 		mContactGroupData.clear();
 		mContactChildIDS.clear();
 		mContactGroupIDS.clear();
+		friendAdapter.notifyDataSetChanged();
 		new GetFriendTask().execute("http://" + Constants.registarIp
 				+ ":8888/MediaConf/addMember.do?userID="
 				+ ContactManageActivity.userId+"&node=a");
@@ -391,6 +392,7 @@ public class FriendManageFragment extends Fragment {
 	@Override
 	public void onStart(){
 		super.onStart();
+		Log.v("FriendManageFragment","onStart");
 		reload();
 	}
 

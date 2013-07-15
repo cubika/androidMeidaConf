@@ -83,7 +83,6 @@ public class AddFriendActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				friendACTV.setFocusable(false);
 				InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 					imm.hideSoftInputFromWindow(friendACTV.getWindowToken(), 0);
 				final String newName = friendACTV.getText().toString();
@@ -99,7 +98,7 @@ public class AddFriendActivity extends Activity {
 							new AddgroupTask(AddFriendActivity.this)
 									.execute("http://"
 											+ Constants.registarIp
-											+ ":8888/MediaConf/cataManage.do?method=addgroup"
+											+ ":8888/MediaConf/cataManage.do?method=addFriend"
 											+ "&userID=" + userID + "&newID="
 											+ newID + "&newName=" + newName
 											+ "&cataID=" + groupID);

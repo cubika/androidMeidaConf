@@ -448,6 +448,7 @@ public final class R {
         public static final int select_all=0x7f080038;
         public static final int serverip_hint=0x7f08001e;
         public static final int speak_control=0x7f080011;
+        public static final int staff_manage=0x7f08003b;
         public static final int start_record=0x7f080013;
         public static final int start_speak=0x7f080019;
         public static final int taolun=0x7f080017;

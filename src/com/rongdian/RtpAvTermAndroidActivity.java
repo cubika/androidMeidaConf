@@ -78,14 +78,14 @@ public abstract class RtpAvTermAndroidActivity extends Activity implements
 	@Override
 	protected void onPause() {
 		super.onPause();
-		getRomotePreview().onPause();
+		//getRomotePreview().onPause();
 		Log.i("RtpAvTermActivity", "onPause");
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		getRomotePreview().onResume();
+		//getRomotePreview().onResume();
 		Log.i("RtpAvTermActivity", "onResume");
 	}
 

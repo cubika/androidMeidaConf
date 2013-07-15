@@ -50,8 +50,9 @@
  	<string name="search_friend">查找联系人</string>
  	<string name="add_gg">增加群组</string>
  	<string name="add_group">增加群组</string>
- 	<string name="group_mem">群组成员</string><string name="group_name">群组名称</string>
- 	
+ 	<string name="group_mem">群组成员</string>
+ 	<string name="group_name">群组名称</string>
+ 
  	<string name="group_hint">请输入联系人姓名</string>
  	<string name="group_new_hint">请输入新建群组名称</string>
  	<string name="delete">删除</string>
@@ -60,4 +61,5 @@
  	<string name="select_all">全选</string>
  	<string name="clear_all">全不选</string>
  	<string name="add_contact">增加联系人</string>
+ 	<string name="staff_manage">人员管理</string>
 </resources>

@@ -7,6 +7,7 @@ import java.util.List;
 import com.rongdian.R;
 
 import android.content.Context;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,6 +75,7 @@ public class FriendAdapter extends BaseExpandableListAdapter{
 	@Override
 	public View getGroupView(int groupPosition, boolean isExpanded,
 			View convertView, ViewGroup parent) {
+		Log.v("FriendAdapter","group position is "+groupPosition);
 //	    TextView row = (TextView)convertView;
 //	    if(row == null) {
 //	      row = new TextView(mContext);

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.content.Context;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -82,6 +83,8 @@ public class GroupAdapter extends BaseExpandableListAdapter{
 //	    row.setPadding(60, 0, 0, 0);
 //	    row.setText(mGroupData.get(groupPosition));
 //	    return row;
+		
+		Log.i("GroupAdapter","group position is "+groupPosition);
 		
 		View v;
 		 if(convertView != null)

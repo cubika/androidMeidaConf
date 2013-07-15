@@ -3,13 +3,13 @@
 
     <string-array name="items">
         <item>创建会议</item>
-        <item>退出会议</item>
         <item>会议管理</item>
         <item>会议信息</item>
         <item>参会人员</item>  
         <item>账户管理</item>
         <item>联系人管理</item>
-        <item>数据共享</item>    
+        <item>数据共享</item>
+        <item>退出会议</item>
         <item>退出程序</item>
     </string-array>
     

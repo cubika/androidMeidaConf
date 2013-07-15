@@ -36,9 +36,6 @@ import android.util.Log;
 public class HttpUtils {
 	
 	public static String jSessionID;
-	public HttpUtils() {
-		// TODO Auto-generated constructor stub
-	}	 
   
 	
 	public static String sendPostMessage(String urlPath,Map<String,String> params,String encode) throws IOException{
