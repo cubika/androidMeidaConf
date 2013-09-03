@@ -2,7 +2,7 @@
 
     <item android:id="@+id/helloUser" 
         android:showAsAction="withText|always" 
-        android:title="yes"></item> 
+        android:title="anonymousUser"></item> 
     <item android:id="@+id/action_show_conf"
           android:icon="@drawable/conf_info"  
           android:showAsAction="always"  
@@ -11,13 +11,17 @@
           android:icon="@drawable/participant"  
           android:title="Participant Message"
           android:showAsAction="ifRoom" />
-        <item
+    <item
         android:id="@+id/action_exit_conf"
         android:showAsAction="never"
         android:title="@string/exit_conf"/>
-            <item
+    <item
         android:id="@+id/action_exit_app"
         android:showAsAction="never"
         android:title="@string/exit_app"/>
+    <item
+        android:id="@+id/action_hide_surface"
+        android:showAsAction="never"
+        android:title="@string/hide_surface"/>
 
 </menu>

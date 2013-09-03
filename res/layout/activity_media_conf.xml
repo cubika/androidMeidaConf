@@ -19,6 +19,8 @@
             android:layout_marginBottom="80dp"
             android:layout_marginLeft="250dp"
             android:layout_marginRight="250dp" >
+<!--               android:layout_width="796dip"
+         android:layout_height="652dip"  -->
 
             <com.rongdian.GL2JNIView
                 android:id="@+id/remoteVideoV"

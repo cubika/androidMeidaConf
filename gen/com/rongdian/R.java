@@ -1263,6 +1263,7 @@ containing a value of this type.
         public static final int abs__up=0x7f05000b;
         public static final int action_exit_app=0x7f0500a5;
         public static final int action_exit_conf=0x7f0500a4;
+        public static final int action_hide_surface=0x7f0500a6;
         public static final int action_show_conf=0x7f0500a2;
         public static final int action_show_par=0x7f0500a3;
         public static final int add=0x7f05006d;
@@ -1516,6 +1517,7 @@ containing a value of this type.
         public static final int group_name=0x7f0a0041;
         public static final int group_new_hint=0x7f0a0043;
         public static final int hello_world=0x7f0a000e;
+        public static final int hide_surface=0x7f0a004b;
         public static final int login_password=0x7f0a002f;
         public static final int login_server=0x7f0a0030;
         public static final int login_username=0x7f0a002e;

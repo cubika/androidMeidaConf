@@ -499,6 +499,7 @@ int id abs__title 0x7f050020
 int id abs__up 0x7f05000b
 int id action_exit_app 0x7f0500a5
 int id action_exit_conf 0x7f0500a4
+int id action_hide_surface 0x7f0500a6
 int id action_show_conf 0x7f0500a2
 int id action_show_par 0x7f0500a3
 int id add 0x7f05006d
@@ -718,6 +719,7 @@ int string group_mem 0x7f0a0040
 int string group_name 0x7f0a0041
 int string group_new_hint 0x7f0a0043
 int string hello_world 0x7f0a000e
+int string hide_surface 0x7f0a004b
 int string login_password 0x7f0a002f
 int string login_server 0x7f0a0030
 int string login_username 0x7f0a002e

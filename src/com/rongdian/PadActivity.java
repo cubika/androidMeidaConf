@@ -57,8 +57,8 @@ public class PadActivity extends RtpAvTermAndroidActivity {
 	private Constants constants;
 	
 	private static ListView confLV, participantLV;// 会议信息和参会人员的Listview
-	private static List<String> participantNames = new ArrayList<String>();
-	private static List<String> participantIDs = new ArrayList<String>();
+	private static List<String> participantNames = new ArrayList<String>(); //参会人员名字
+	private static List<String> participantIDs = new ArrayList<String>();  //参会人员ID
 	//媒体相关
 	long mediaTerm;                    //媒体终端，生命周期同一个会议
 	SurfaceView mSurfaceView = null;  //显示本地视频界面组件
@@ -76,6 +76,7 @@ public class PadActivity extends RtpAvTermAndroidActivity {
 
 
     Timer timer = new Timer();
+    //获取服务器刷新数据
 	TimerTask task = new TimerTask( ) {
 		public void run ( ) {		
 			String url = Constants.prefix+"clientRefresh.do?";
@@ -322,7 +323,8 @@ public class PadActivity extends RtpAvTermAndroidActivity {
 		int width = metrics.widthPixels;
 		int height = metrics.heightPixels;
 		int diswidth = (int) width / 3;
-		int disheight = (int) height / 3;
+		//int disheight = (int) height / 3;
+		int disheight = diswidth*3/4;
 		mSurfaceView.setLayoutParams(new LinearLayout.LayoutParams(diswidth,disheight));
 
 		listener = new SipTermListenerImpl(handler);// 监听Sip事件，在该监听器中发送msg给本UI线程处理
@@ -382,11 +384,11 @@ public class PadActivity extends RtpAvTermAndroidActivity {
     	}
 	}
 	public void logout(){
-		Map<String,String> params = new HashMap<String,String>();  
-	     params.put("confId", confId.toString());  
-	     params.put("userId", userId);
+//		Map<String,String> params = new HashMap<String,String>();  
+//	     params.put("confId", confId.toString());  
+//	     params.put("userId", userId);
 	     LogoutThread logoutthread = new LogoutThread(handler);
-	     logoutthread.doStart(Constants.prefix+"userLogin.do?method=logout",params, PadActivity.this);
+	     logoutthread.doStart(Constants.prefix+"userLogin.do?method=logout",null, PadActivity.this);
 	}
 	
 //	@Override
@@ -706,6 +708,12 @@ public class PadActivity extends RtpAvTermAndroidActivity {
         	return true;
         case R.id.action_exit_app:
         	quitApp();
+        	return true;
+        case R.id.action_hide_surface:
+        	if(mSurfaceView.isShown())
+        		mSurfaceView.setVisibility(View.INVISIBLE);
+        	else
+        		mSurfaceView.setVisibility(View.VISIBLE);
         	return true;
         	
         }

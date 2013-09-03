@@ -124,7 +124,7 @@ public class GroupManageFragment extends Fragment {
 
 										@Override
 										public void onClick(DialogInterface dialog, int which) {
-											if(which==DialogInterface.BUTTON_POSITIVE){	//删除联系人
+											if(which==DialogInterface.BUTTON_POSITIVE){	//离开群组
 												dialog.dismiss();
 												new LeaveGroupTask().execute(Constants.prefix+"group.do?method=leaveGroup"
 														+"&groupID="+mGroupGroupIDS.get(groupPosition)

@@ -78,4 +78,6 @@
  	<string name="clear_all">全不选</string>
  	<string name="add_contact">增加联系人</string>
  	<string name="staff_manage">人员管理</string>
+ 	
+ 	<string name="hide_surface">隐藏本地</string>
 </resources>
