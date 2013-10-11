@@ -45,7 +45,7 @@ public class MenuFragment extends PreferenceFragment implements OnPreferenceClic
         View v = super.onCreateView(inflater, container, savedInstanceState);
         if(v != null) {
             ListView lv = (ListView) v.findViewById(android.R.id.list);
-            lv.setPadding(0, 20, 0, 0);
+            lv.setPadding(0, 50, 0, 0);
             
             lv.setBackgroundColor(Color.rgb(4, 26, 55)); 
         }

@@ -225,7 +225,7 @@ public class PadActivity extends RtpAvTermAndroidActivity {
 					processJoinConfOK(saveMediaBundle);					
 			       	break;
 				case 0x1237: //退出会议
-					mGL2JINView.setBackgroundResource(R.drawable.video);
+					mGL2JINView.setBackgroundResource(R.drawable.intro);
 					mSurfaceView.setBackgroundResource(R.drawable.video);
 					if(message.getData().getString("show")!=null)
 						Toast.makeText(PadActivity.this, message.getData().getString("show"), Toast.LENGTH_SHORT).show();
@@ -314,18 +314,18 @@ public class PadActivity extends RtpAvTermAndroidActivity {
 		super.onCreate(savedInstanceState);	
 
 		mGL2JINView = getRomotePreview();
-		mGL2JINView.setBackgroundResource(R.drawable.video);// 进会之前有背景图
+		mGL2JINView.setBackgroundResource(R.drawable.intro);// 进会之前有背景图
 		mSurfaceView.setBackgroundResource(R.drawable.video);
 		
-		// 设置视频显示组件的宽和高
-		DisplayMetrics metrics = new DisplayMetrics();
-		getWindowManager().getDefaultDisplay().getMetrics(metrics);
-		int width = metrics.widthPixels;
-		int height = metrics.heightPixels;
-		int diswidth = (int) width / 3;
-		//int disheight = (int) height / 3;
-		int disheight = diswidth*3/4;
-		mSurfaceView.setLayoutParams(new LinearLayout.LayoutParams(diswidth,disheight));
+//		// 设置视频显示组件的宽和高
+//		DisplayMetrics metrics = new DisplayMetrics();
+//		getWindowManager().getDefaultDisplay().getMetrics(metrics);
+//		int width = metrics.widthPixels;
+//		int height = metrics.heightPixels;
+//		int diswidth = (int) width / 3;
+//		//int disheight = (int) height / 3;
+//		int disheight = diswidth*3/4;
+//		mSurfaceView.setLayoutParams(new LinearLayout.LayoutParams(diswidth,disheight));
 
 		listener = new SipTermListenerImpl(handler);// 监听Sip事件，在该监听器中发送msg给本UI线程处理
 
@@ -506,6 +506,15 @@ public class PadActivity extends RtpAvTermAndroidActivity {
 	public void onRecvVideo(long term) {
 		super.onRecvVideo(term);
 	}
+	
+	//I帧不足时，向服务器请求I帧
+	@Override
+	public void onRequestKeyFrame(long term) {
+		Log.i("requestFrame", "onRequestFrame");
+		long callId = saveMediaBundle.getLong("callId");
+		SipTerm.requestKeyFrame(term, callId);
+	}
+	
 	
 	
 	/**
@@ -711,7 +720,7 @@ public class PadActivity extends RtpAvTermAndroidActivity {
         	return true;
         case R.id.action_hide_surface:
         	if(mSurfaceView.isShown())
-        		mSurfaceView.setVisibility(View.INVISIBLE);
+        		mSurfaceView.setVisibility(View.GONE);
         	else
         		mSurfaceView.setVisibility(View.VISIBLE);
         	return true;

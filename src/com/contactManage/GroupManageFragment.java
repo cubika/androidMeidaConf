@@ -177,7 +177,7 @@ public class GroupManageFragment extends Fragment {
 		protected void onPostExecute(String result) {
 			Log.v("GetgroupTask", "result is:" + result);
 			Log.v("GetgroupTask", "count is:" + count);
-			if (count == 1) {
+			if (count == 1 && result!=null) {
 				count++;
 				JSONArray array;
 				try {

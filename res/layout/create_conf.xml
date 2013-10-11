@@ -11,6 +11,11 @@
         android:layout_weight="1"
         class="com.rongdian.CreateConfActivity$FormFragment" />
 
+    <View
+	    android:layout_width="1dp"
+	    android:layout_height="match_parent"
+	    android:background="@android:color/darker_gray"/>
+    
     <fragment
         android:id="@+id/member"
         android:layout_width="0px"

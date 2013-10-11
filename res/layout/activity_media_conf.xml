@@ -6,39 +6,57 @@
     android:layout_height="match_parent" >
 
     <RelativeLayout
-        android:background="@drawable/background"
+        android:background="@android:color/darker_gray"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
+
         <LinearLayout
+            android:id="@+id/local_ll"
+            android:layout_width="430dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentBottom="true"
+			android:layout_alignParentTop="true">
+			<ImageView 
+			    android:layout_width="match_parent"
+                android:layout_height="190dp"
+                android:background="@drawable/cloud" />
+            <SurfaceView
+                android:id="@+id/localVideoV"
+                android:layout_width="match_parent"
+                android:layout_height="320dp" 
+                android:layout_gravity="center"/>
+            <ImageView 
+			    android:layout_width="match_parent"
+                android:layout_height="190dp"
+                android:background="@drawable/wetgrass" />
+        </LinearLayout>
+        
+<!--         <View
+            android:id="@+id/seperator"
+		    android:layout_width="2dp"
+		    android:layout_height="match_parent"
+		    android:layout_toRightOf="@id/local_ll"
+		    android:background="@android:color/white"/> -->
+        
+         <LinearLayout
             android:id="@+id/remote_ll"
-            android:background="@drawable/shape"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="80dp"
-            android:layout_marginBottom="80dp"
-            android:layout_marginLeft="250dp"
-            android:layout_marginRight="250dp" >
+			android:layout_alignParentTop="true"
+			android:layout_alignParentRight="true"
+			android:layout_marginRight="4dp"
+			android:layout_alignParentBottom="true"
+			android:layout_toRightOf="@id/local_ll">
 <!--               android:layout_width="796dip"
          android:layout_height="652dip"  -->
 
             <com.rongdian.GL2JNIView
                 android:id="@+id/remoteVideoV"
+                android:background="@android:color/transparent"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/local_ll"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:background="@drawable/shape" >
-
-            <SurfaceView
-                android:id="@+id/localVideoV"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>
     </RelativeLayout>

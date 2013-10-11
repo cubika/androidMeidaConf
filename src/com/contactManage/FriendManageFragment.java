@@ -243,7 +243,7 @@ public class FriendManageFragment extends Fragment {
 		protected void onPostExecute(String result) {
 			Log.v("GetFriendTask", "result is:" + result);
 			Log.v("GetFriendTask", "count is:" + count);
-			if (count == 1) {
+			if (count == 1 && result!=null) {
 				count++;
 				JSONArray array;
 				try {

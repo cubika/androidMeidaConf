@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivity;
-
 import android.content.res.Configuration;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.Size;
@@ -17,13 +19,20 @@ import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.SurfaceHolder.Callback;
+import android.view.SurfaceView;
+import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 
-public abstract class RtpAvTermAndroidActivity extends SlidingActivity implements
-		Camera.PreviewCallback, Callback, RtpAvTermListener {
+import com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivity;
+
+public abstract class RtpAvTermAndroidActivity extends SlidingActivity
+		implements OnTouchListener, Camera.PreviewCallback, Callback,
+		RtpAvTermListener {
 	private static final int frequency = 8000;
 	private static final int channelConfiguration = AudioFormat.CHANNEL_CONFIGURATION_MONO;
 	private static final int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
@@ -49,10 +58,14 @@ public abstract class RtpAvTermAndroidActivity extends SlidingActivity implement
 	private boolean isVideoOutput = false;
 
 	private long term = 0;
-	
+
 	private boolean surfaceCreated;
 	private boolean surfaceChanged;
-	
+
+	private SurfaceHolder surfaceHolder;
+	private Rect rect;// surfaceView四周的rect
+	private int actWidth,actHeight;
+
 	//
 	// //-------------------------------------------------------------------------
 	//
@@ -67,52 +80,61 @@ public abstract class RtpAvTermAndroidActivity extends SlidingActivity implement
 		super.onCreate(savedInstanceState);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		setContentView(getLayoutId());
-		
-		surfaceCreated=false;
-		surfaceChanged=false;
+
+		surfaceCreated = false;
+		surfaceChanged = false;
 		mSurfaceView = getLocalPreview();
-		SurfaceHolder surfaceHolder = mSurfaceView.getHolder();
+		//mSurfaceView.setOnTouchListener(this);
+		surfaceHolder = mSurfaceView.getHolder();
 		surfaceHolder.addCallback(this);
 		surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+		
+		Display display = getWindowManager().getDefaultDisplay();
+		Point size = new Point();
+		display.getSize(size);
+		actWidth = size.x;
+		actHeight = size.y;
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		//getRomotePreview().onPause();
+		// getRomotePreview().onPause();
 		Log.i("RtpAvTermActivity", "onPause");
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		//getRomotePreview().onResume();
+		// getRomotePreview().onResume();
 		Log.i("RtpAvTermActivity", "onResume");
 	}
 
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
-		Log.i("RtpAvTermActivity","surfaceChanged");
-		surfaceChanged=true;
+		Log.i("RtpAvTermActivity", "surfaceChanged");
+		surfaceChanged = true;
 	}
 
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
-		Log.i("RtpAvTermActivity","surfaceCreated");
-		surfaceCreated=true;
+		Log.i("RtpAvTermActivity", "surfaceCreated");
+		surfaceCreated = true;
+		rect = new Rect(mSurfaceView.getLeft(), mSurfaceView.getRight(),
+				mSurfaceView.getWidth(), mSurfaceView.getHeight());// 图片的rect
 	}
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		Log.i("RtpAvTermActivity","surfaceDestoryed");
-		surfaceCreated=false;
-		surfaceChanged=false;
-		if(mCamera!=null){
+		Log.i("RtpAvTermActivity", "surfaceDestoryed");
+		surfaceCreated = false;
+		surfaceChanged = false;
+		if (mCamera != null) {
 			mCamera.setPreviewCallback(null);
 			mCamera.stopPreview();
 			mCamera.release();
-			mCamera=null;
+			mCamera = null;
 		}
 	}
 
@@ -206,22 +228,22 @@ public abstract class RtpAvTermAndroidActivity extends SlidingActivity implement
 		}
 
 		mSurfaceView = getLocalPreview();
-		final SurfaceHolder surfaceHolder = mSurfaceView.getHolder();
+		surfaceHolder = mSurfaceView.getHolder();
 		surfaceHolder.addCallback(this);
 		surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-		
+
 		mVideoWidth = videoWidth;
 		mVideoHeight = videoHeight;
-		
-		//mCamera = Camera.open(getFrontCameraId());
+
+		// mCamera = Camera.open(getFrontCameraId());
 		if (mCamera == null) {
 			if (android.os.Build.VERSION.SDK_INT >= 9) {
-				mCamera = Camera.open(getFrontCameraId());  //leixiaojiang
+				mCamera = Camera.open(getFrontCameraId()); // leixiaojiang
 			} else {
 				mCamera = Camera.open();
 			}
 		}
-		
+
 		if (mPreviewRunning) {
 			mCamera.stopPreview();
 		}
@@ -255,18 +277,18 @@ public abstract class RtpAvTermAndroidActivity extends SlidingActivity implement
 		mCamera.setParameters(p);
 		mCamera.setPreviewCallback(this);
 
-//		try {
-//			// 设置预览的控件，图像会绘画在这个控件上。不需要人工去画
-//			mCamera.setPreviewDisplay(surfaceHolder);
-//		} catch (Exception ex) {
-//			RtpAvTerm.ravtCloseLocalVideoPreview(this.term);
-//			return (false);
-//		}
-//		// 开始预览
-//		mCamera.startPreview();
-//		mPreviewRunning = true;
-		
-		Timer timer=new Timer();
+		// try {
+		// // 设置预览的控件，图像会绘画在这个控件上。不需要人工去画
+		// mCamera.setPreviewDisplay(surfaceHolder);
+		// } catch (Exception ex) {
+		// RtpAvTerm.ravtCloseLocalVideoPreview(this.term);
+		// return (false);
+		// }
+		// // 开始预览
+		// mCamera.startPreview();
+		// mPreviewRunning = true;
+
+		Timer timer = new Timer();
 		TimerTask setPreviewTask = new TimerTask() {
 
 			@Override
@@ -287,19 +309,18 @@ public abstract class RtpAvTermAndroidActivity extends SlidingActivity implement
 
 			@Override
 			public void run() {
-				if(surfaceChanged){
-					mCamera.startPreview(); //只有surface准备好了才开始预览
+				if (surfaceChanged) {
+					mCamera.startPreview(); // 只有surface准备好了才开始预览
 					mPreviewRunning = true;
 					this.cancel();
 				}
 
 			}
 		};
-		
+
 		timer.schedule(setPreviewTask, 0, 1000);
 		timer.schedule(startPreviewTask, 0, 1000);
 
-		
 		return (true);
 	}
 
@@ -365,13 +386,13 @@ public abstract class RtpAvTermAndroidActivity extends SlidingActivity implement
 			return;
 		}
 
-		if (mPreviewRunning && mCamera!=null) {
+		if (mPreviewRunning && mCamera != null) {
 			System.out.println("Release Preview now");
 			mPreviewRunning = false;
 			mCamera.setPreviewCallback(null);
 			mCamera.stopPreview();
 			mCamera.release();
-			mCamera=null;
+			mCamera = null;
 		}
 
 		RtpAvTerm.ravtCloseLocalVideoPreview(this.term);
@@ -550,7 +571,7 @@ public abstract class RtpAvTermAndroidActivity extends SlidingActivity implement
 		if (this.term == 0) {
 			return;
 		}
-		//Log.v("RtpAvTerm","Receive video");
+		// Log.v("RtpAvTerm","Receive video");
 		getRomotePreview().renderer.setOpenGLESDisplay(this.term);
 		// 刷新界面
 		getRomotePreview().requestRender();
@@ -558,7 +579,7 @@ public abstract class RtpAvTermAndroidActivity extends SlidingActivity implement
 
 	@Override
 	public synchronized void onRequestKeyFrame(long term) {
-		// TODO Auto-generated method stub
+		
 	}
 
 	//
@@ -608,5 +629,111 @@ public abstract class RtpAvTermAndroidActivity extends SlidingActivity implement
 		audioRecord.stop();
 		audioRecord.release();
 		audioRecord = null;
+	}
+
+	//
+	// //-----拖动、缩放--------------------------------------------------------------------------------
+	//
+
+	// 倍率
+	private float rate = 1;
+	// 记录上次的位置
+	private float oldRate = 1;
+	private Point point = new Point();// 点击点
+	private boolean canDrag = false;// 判断是否点击在图片上，否则拖动无效
+	private boolean doDrag = false;
+	private boolean isFirst = false;
+	private int offsetX = 0, offsetY = 0;// 点击点离图片左上角的距离
+	// 记录第一次触屏时线段的距离
+	private float oldLineDistance;
+
+	private void draw() {
+		Canvas canvas = surfaceHolder.lockCanvas();// 获取画布
+		canvas.drawColor(Color.BLACK);// 清屏
+		if (1 <= rate && rate <= 3) {
+			canvas.scale(rate, rate, mSurfaceView.getWidth() / 2 + rect.left,
+					mSurfaceView.getHeight() / 2 + rect.top);
+		} else {
+			rate = 1;
+		}
+		mSurfaceView.postInvalidate();
+		if (canvas != null) {
+			surfaceHolder.unlockCanvasAndPost(canvas);// 解锁画布，提交画好的图像
+		}
+	}
+
+	@Override
+	public boolean onTouch(View v, MotionEvent event) {
+		
+		switch (event.getAction() & MotionEvent.ACTION_MASK) {
+		case MotionEvent.ACTION_DOWN:
+			point.x = (int) event.getX();// 获取点击点坐标
+			point.y = (int) event.getY();
+			Log.i("point position", point.x + "  " + point.y);
+			if (rect.contains(point.x, point.y)) {// 判断点击点是否在图片区域
+				canDrag = true;
+				doDrag = true;
+				isFirst = true;
+				offsetX = point.x - rect.left;
+				offsetY = point.y - rect.top;
+			}
+			break;
+
+		case MotionEvent.ACTION_MOVE:
+			// 拖动算法
+			if (canDrag) {
+				rect.left = (int) event.getX() - offsetX;
+				rect.top = (int) event.getY() - offsetY;
+				rect.right = rect.left + mSurfaceView.getWidth();
+				rect.bottom = rect.top + mSurfaceView.getHeight();
+				if (rect.left < 0) {
+					rect.left = 0;
+					rect.right = rect.left + mSurfaceView.getWidth();
+				}
+				if (rect.right > actWidth) {
+					rect.right = actWidth;
+					rect.left = rect.right - mSurfaceView.getWidth();
+				}
+				if (rect.top < 0) {
+					rect.top = 0;
+					rect.bottom = rect.top + mSurfaceView.getHeight();
+				}
+				if (rect.bottom > actHeight) {
+					rect.bottom = actHeight;
+					rect.top = rect.bottom - mSurfaceView.getHeight();
+				}
+				System.out.println("--------------拖动操作执行--------------");
+			}
+			// 计算缩放比例
+			if (doDrag) {
+				if (event.getPointerCount() == 2) {
+					if (isFirst) {
+						// 得到第一次触屏时线段的长度
+						oldLineDistance = (float) Math.sqrt(Math.pow(
+								event.getX(1) - event.getX(0), 2)
+								+ Math.pow(event.getY(1) - event.getY(0), 2));
+						isFirst = false;
+					} else {
+						// 得到触屏时线段的长度
+						float newLineDistance = (float) Math.sqrt(Math.pow(
+								event.getX(1) - event.getX(0), 2)
+								+ Math.pow(event.getY(1) - event.getY(0), 2));
+						// 获取本次的缩放比例
+						rate = oldRate * newLineDistance / oldLineDistance;
+						System.out.println("--------------缩放操作执行--------------");
+					}
+				}
+			}
+			draw();
+			break;
+		case MotionEvent.ACTION_UP:
+			canDrag = false;
+			doDrag = false;
+			break;
+
+		default:
+			break;
+		}
+		return true;
 	}
 }

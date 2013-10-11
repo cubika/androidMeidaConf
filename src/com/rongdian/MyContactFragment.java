@@ -30,35 +30,37 @@ import android.widget.ExpandableListView.OnGroupExpandListener;
 public class MyContactFragment extends Fragment implements OnGroupCollapseListener,OnGroupExpandListener,OnChildClickListener{
 
 	private static ConfMemberAdapter ContactAdapter;
-	public static List<String> mContactGroupData = new ArrayList<String>();
-	public static List<HashMap<Integer, String>> mContactChildData = new ArrayList<HashMap<Integer, String>>();
+	public static List<String> mContactGroupData;
+	public static List<HashMap<Integer, String>> mContactChildData;
 	//记录child的checkbox是否被选中，如果选中则HaspMap中有
-	public static List<HashMap<Integer, Boolean>> mCheckedObj = new ArrayList<HashMap<Integer, Boolean>>();
+	public static List<HashMap<Integer, Boolean>> mCheckedObj;
 	//记录用户名和id的对应关系
-	public static Map<String,Integer> userRecord=new HashMap<String,Integer>();
-	private static int visitCount=0,contactCount=1,groupSize=0,childSize=0;
+	public static Map<String,Integer> userRecord;
+	private static int contactCount,groupSize,childSize;
 	
 	 @Override
 	    public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	            Bundle savedInstanceState) {
-		 View v=inflater.inflate(R.layout.expandable, container, false);
-		 System.out.println("GroupSize:"+mContactGroupData.size()+" ChildSize:"+mContactChildData.size());
+			contactCount=1;
+			groupSize=0;
+			childSize=0;
+			mContactGroupData = new ArrayList<String>();
+			mContactChildData = new ArrayList<HashMap<Integer, String>>();
+			mCheckedObj = new ArrayList<HashMap<Integer, Boolean>>();
+			userRecord=new HashMap<String,Integer>();
+			View v=inflater.inflate(R.layout.expandable, container, false);
 			ExpandableListView contactELV = (ExpandableListView) v.findViewById(R.id.edlv);
 			contactELV.setBackgroundColor(Color.WHITE);
 			contactELV.setPadding(10, 20, 10, 0);
-			if(visitCount!=0){
-				contactELV.setAdapter(ContactAdapter);
-				return v;
-			}
-			InitData();//第一次进入时加载数据
+			contactELV.setAdapter(ContactAdapter);
+			InitData();//加载数据
 			contactELV.setOnGroupCollapseListener(this);
 			contactELV.setOnGroupExpandListener(this);
 			contactELV.setOnChildClickListener(this);
 			ContactAdapter = new ConfMemberAdapter(inflater, getActivity(),
 					mContactGroupData, mContactChildData);
 			contactELV.setAdapter(ContactAdapter);
-			visitCount++;
-		 return v;
+			 return v;
 	 }
 	 
 	 private void InitData() {
