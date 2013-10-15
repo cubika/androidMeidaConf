@@ -1,15 +1,19 @@
 package com.rongdian;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
+import com.http.GetConfTypeTask;
+import com.rongdian.CreateConfActivity.FormFragment;
 import com.util.CallInfo;
 import com.util.Constants;
 
 public class SipTermListenerImpl implements SipTermListener {
     private CallInfo callInfo;
-    private Constants constants;
     private Handler handler;
 	
     public SipTermListenerImpl(Handler handler){
@@ -26,17 +30,8 @@ public class SipTermListenerImpl implements SipTermListener {
 		msg.what = 0x1235;
 		handler.sendMessage(msg);
 		
-		byte[] profileLevelId = new byte[64];
-		byte[] tmp = "42e015\0".getBytes();
-		for(int i = 0; i < tmp.length;  i++)
-			profileLevelId[i] = tmp[i];
- 		if(SipTerm.acceptIncomingCall(term, callId, "0.0.0.0".getBytes(),
-				Constants.sdpLocalAudioPort, Constants.sdpLocalAudioRtpmaps, Constants.sdpLocalAudioPayloads, true, true, 
-				Constants.sdpLocalVideoPort, Constants.sdpLocalVideoBitRate, Constants.sdpLocalVideoRtpmaps,
-				Constants.sdpLocalVideoPayloads, profileLevelId, true, true))
-			System.out.println("acceptIncomingCall called OK");
-		else
-			System.out.println("acceptIncomingCall called bad");
+		new GetConfTypeTask(term,callId).execute(Constants.prefix+"/getConfVideoType.do?userId="+PadActivity.userId);
+
 	}
 
 	@Override
@@ -123,7 +118,7 @@ public class SipTermListenerImpl implements SipTermListener {
 		// TODO Auto-generated method stub
 		System.out.println("onCallRequestKeyFrame term:" + String.valueOf(term)
 				+ "callId:" + String.valueOf(callId));
-
+		RtpAvTerm.ravtMakeKeyFrameOutput(term);
 	}
 
 	@Override
