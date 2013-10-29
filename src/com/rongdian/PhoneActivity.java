@@ -710,6 +710,14 @@ public class PhoneActivity extends RtpAvTermAndroidActivity {
 		super.onRecvVideo(term);
 	}
 
+	//I帧不足时，向服务器请求I帧
+	@Override
+	public void onRequestKeyFrame(long term) {
+		Log.i("requestFrame", "onRequestFrame");
+		long callId = saveMediaBundle.getLong("callId");
+		SipTerm.requestKeyFrame(term, callId);
+	}
+	
 	/**
 	 * 注册成功的事件处理函数，主要用于界面UI组件更新（待补充） 此外还需要设置定时器，定时重新注册，保证注册服务器上的注册成功信息不过期
 	 */

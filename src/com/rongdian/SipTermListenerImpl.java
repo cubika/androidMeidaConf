@@ -125,6 +125,7 @@ public class SipTermListenerImpl implements SipTermListener {
 		// TODO Auto-generated method stub
 		System.out.println("onCallRequestKeyFrame term:" + String.valueOf(term)
 				+ "callId:" + String.valueOf(callId));
+		RtpAvTerm.ravtMakeKeyFrameOutput(term);
 
 	}
 
