@@ -246,13 +246,13 @@ public class Login extends Activity {
                 data.putString("password", password);
                 data.putString("userId", message.getData().getString("userId"));
                 intent.putExtras(data);
-            	finish();
+            	//finish();
 				startActivity(intent);
                 break;
             case 2:
             	String failure = message.getData().getString("info");
             	if(failure.equals("Error")){
-            		Toast.makeText(Login.this, "您已经登录过了，现在为您注销，请您重新登录！", Toast.LENGTH_LONG).show();
+            		//Toast.makeText(Login.this, "您已经登录过了，现在为您注销，请您重新登录！", Toast.LENGTH_LONG).show();
             	}
             	else if(failure.equals("nameError")){
             		Toast.makeText(Login.this, "用户名错误!", Toast.LENGTH_LONG).show();
@@ -262,7 +262,7 @@ public class Login extends Activity {
             	}
             	break;
             default://程序异常...（网络连接出错）
-                Toast.makeText(Login.this, "网络异常，请稍后再尝试! "+message.getData().getString("info"), Toast.LENGTH_LONG).show();
+                Toast.makeText(Login.this, "网络异常，请稍后再尝试!", Toast.LENGTH_LONG).show();
                 break;
             }
         }

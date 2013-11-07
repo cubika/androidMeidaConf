@@ -16,5 +16,8 @@
     <Preference
         android:key="contactManage"
         android:title="联系人管理" android:layout="@layout/pre_layout" android:icon="@drawable/contact"/>
+    <Preference
+        android:key="docShare"
+        android:title="文档共享" android:layout="@layout/pre_layout" android:icon="@drawable/doc"/>
 
 </PreferenceScreen>

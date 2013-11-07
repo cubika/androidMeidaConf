@@ -80,4 +80,16 @@
  	<string name="staff_manage">人员管理</string>
  	
  	<string name="hide_surface">隐藏本地</string>
+ 	
+ 	<string name="apply">申请控制</string>
+    <string name="drop">放弃控制</string>
+    <string name="upload">上传文件</string>
+    <string name="zoomIn">放大</string>
+    <string name="zoomOut">缩小</string>
+    <string name="homepage">首页</string>
+    <string name="prePage">上一页</string>
+    <string name="nextPage">下一页</string>
+    <string name="gotoPage">跳转到</string>
+    <string name="gotook">确定</string>
+    <string name="endPage">尾页</string>
 </resources>

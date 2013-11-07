@@ -1,5 +1,7 @@
 package com.rongdian;
 
+import cn.edu.bupt.mmc.docshare.gui.DocShareActivity;
+
 import com.contactManage.ContactManageActivity;
 import com.http.GenericTask;
 import com.util.Constants;
@@ -37,6 +39,7 @@ public class MenuFragment extends PreferenceFragment implements OnPreferenceClic
         findPreference("confManage").setOnPreferenceClickListener(this);
         findPreference("accountManage").setOnPreferenceClickListener(this);
         findPreference("contactManage").setOnPreferenceClickListener(this);
+        findPreference("docShare").setOnPreferenceClickListener(this);
     }
     
     @Override
@@ -122,10 +125,19 @@ public class MenuFragment extends PreferenceFragment implements OnPreferenceClic
             ft.addToBackStack(null);
             AccountManageFragment accountFragment=new AccountManageFragment();
             accountFragment.show(ft, "accountManageDialog");
-
+            return true;
         }else if("contactManage".equals(key)) {
         	Intent intent=new Intent(getActivity(),ContactManageActivity.class);
         	startActivity(intent);
+        	return true;
+        }else if("docShare".equals(key)){
+        	if(PadActivity.confId == -1){
+        		Toast.makeText(getActivity(), "您还没有加入会议，无法使用数据共享", Toast.LENGTH_LONG).show();
+        		return false;
+        	}
+        	Intent intent=new Intent(getActivity(),DocShareActivity.class);
+        	startActivity(intent);
+        	return true;
         }
         return false;
     }

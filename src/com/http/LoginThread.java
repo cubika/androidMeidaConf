@@ -76,12 +76,13 @@ public class LoginThread extends Thread {
 			//	System.out.println("logined:"+logined+"  name:"+name+"  pass:"+pass+" userId:"+userId);
 				
 				data.putString("userId", userId);
-				if(logined.equals("success")){
-					msg.what=2; //登录失败,请稍候刷新页面重新登陆
-					data.putBoolean("login", false);
-					data.putString("info", "Error");
-					msg.setData(data);
-				}else{
+//				if(logined.equals("success")){
+//					//现已改成直接登录，不再登录两次
+////					msg.what=2; //登录失败,请稍候刷新页面重新登陆
+////					data.putBoolean("login", false);
+////					data.putString("info", "Error");
+////					msg.setData(data);
+//				}else{
 					if(name.equals("true")){
 						msg.what=2; 
 						data.putBoolean("login", false);
@@ -99,7 +100,7 @@ public class LoginThread extends Thread {
 						data.putString("info", "normal");
 						msg.setData(data);
 					}
-				} 
+				 
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

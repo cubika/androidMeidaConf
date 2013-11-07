@@ -36,6 +36,15 @@
             android:name="com.contactManage.ContactManageActivity"
             android:screenOrientation="landscape" >
         </activity>
+        <activity
+            android:name="cn.edu.bupt.mmc.docshare.gui.DocShareActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="landscape">
+        </activity>
+        <activity
+            android:name="cn.edu.bupt.mmc.docshare.gui.FileBrowserActivity"
+            android:screenOrientation="landscape" >
+        </activity>
     </application>
 
     <uses-permission android:name="android.permission.USE_SIP" />
