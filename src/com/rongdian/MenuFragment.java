@@ -1,5 +1,6 @@
 package com.rongdian;
 
+import cn.bupt.mmc.desktopshare.gui.DesktopShareActivity;
 import cn.edu.bupt.mmc.docshare.gui.DocShareActivity;
 
 import com.contactManage.ContactManageActivity;
@@ -40,6 +41,7 @@ public class MenuFragment extends PreferenceFragment implements OnPreferenceClic
         findPreference("accountManage").setOnPreferenceClickListener(this);
         findPreference("contactManage").setOnPreferenceClickListener(this);
         findPreference("docShare").setOnPreferenceClickListener(this);
+        findPreference("desktopShare").setOnPreferenceClickListener(this);
     }
     
     @Override
@@ -136,6 +138,14 @@ public class MenuFragment extends PreferenceFragment implements OnPreferenceClic
         		return false;
         	}
         	Intent intent=new Intent(getActivity(),DocShareActivity.class);
+        	startActivity(intent);
+        	return true;
+        }else if("desktopShare".equals(key)){
+        	if(PadActivity.confId == -1){
+        		Toast.makeText(getActivity(), "您还没有加入会议，无法使用桌面共享", Toast.LENGTH_LONG).show();
+        		return false;
+        	}
+        	Intent intent=new Intent(getActivity(),DesktopShareActivity.class);
         	startActivity(intent);
         	return true;
         }

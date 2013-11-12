@@ -1,20 +1,24 @@
 package cn.edu.bupt.mmc.client;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.LinkedHashMap;
+
+import org.codehaus.jackson.map.ObjectMapper;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-
 import cn.edu.bupt.mmc.docshare.apps.EditorState;
-import cn.edu.bupt.mmc.docshare.gui.DataShareProcessor;
 import cn.edu.bupt.mmc.docshare.msgformat.ChangeLastTimePageReqBody;
 import cn.edu.bupt.mmc.docshare.msgformat.ChangeLastTimePageRespBody;
 import cn.edu.bupt.mmc.docshare.msgformat.ChangePageReqBody;
@@ -39,14 +43,20 @@ public class TCPClient extends Thread{
 	private int userId;
 	private String userName;
 
-	private ObjectOutputStream outputstream= null;
-	private ObjectInputStream inputstream= null;
+//	private ObjectOutputStream outputstream= null;
+//	private ObjectInputStream inputstream= null;
 	private Socket socket = null;
 	private boolean running=true;
 	public EditorState state;
 	private ProgressDialog progressDialog = null;
 	private Handler handler;
 	private static final String TAG="TCPClient";
+	
+	private OutputStream outStream;
+	private InputStream inStream;
+	private BufferedReader reader;
+	private PrintWriter writer;
+	private ObjectMapper mapper = new ObjectMapper();
 	
 	public TCPClient(int userId, String userName, int conferenceid,
             String serverIP, int serverPort, EditorState state, Handler handler) throws IOException {
@@ -75,36 +85,45 @@ public class TCPClient extends Thread{
 		 try{
 	        socket = new Socket(this.serverIP, this.serverPort);
 
-	        System.out.println("outputstream is null: "+(outputstream==null));
-	        outputstream = new ObjectOutputStream(this.socket.getOutputStream());
-	        inputstream = new ObjectInputStream(this.socket.getInputStream());
-	        System.out.println("outputstream is null: "+(outputstream==null));
+//	        outputstream = new ObjectOutputStream(this.socket.getOutputStream());
+//	        inputstream = new ObjectInputStream(this.socket.getInputStream());
+	        outStream = socket.getOutputStream();
+	        inStream = socket.getInputStream();
+	        reader = new BufferedReader(new InputStreamReader(inStream,"UTF-8"));
+	        writer = new PrintWriter(new OutputStreamWriter(outStream,"UTF-8"));
 		 }catch(IOException e){
-			 e.printStackTrace();
 		 }
 		 register2Server();
 	        
-		String line=null;
+		String json=null;
 		SerToCliMsg msg = null;
 		try{
-			while(running && (msg = (SerToCliMsg)inputstream.readObject())!=null){
-
-				System.out.println("TCPClient receive message :"+msg.msgType);
+			while(running && (json = reader.readLine())!=null){
+				System.out.println("While read message: "+json);
+				msg = mapper.readValue(json, SerToCliMsg.class);
+				LinkedHashMap body = (LinkedHashMap) msg.msgBody;
+				
 				if(msg.msgType==msg.msgType.FILE_LIST_UPDATE){
-					updateFileListHandler(msg);
+					//updateFileListHandler(msg);
 				}
 				if(msg.msgType==msg.msgType.CTRL_RESPONSE){
 					//System.out.println(msg.msgType);
+					CtrlRespBody respBody = new CtrlRespBody();
+					respBody.responseType = CtrlRespBody.RESPONSE_TYPE.valueOf(body.get("responseType").toString());
+					msg.msgBody = respBody;
 					controlRespHandler(msg);
 				}
 				if(msg.msgType==msg.msgType.CTRL_CHANGE){
 					//System.out.println(msg.msgType);
+					String ctrlName = body.get("newCtrlerName") != null ? body.get("newCtrlerName").toString() : "";
+					CtrlChangeMsgBody respBody = new CtrlChangeMsgBody(Integer.parseInt(body.get("newCtrlerId").toString()),ctrlName);
+					msg.msgBody = respBody;
 					controllerChangeHandler(msg);
 				}
 				
 				if(msg.msgType==msg.msgType.CHANGE_PAGE_RESPONSE){
 					//System.out.println(msg.msgType);
-					changePageRespHandler(msg);
+					//changePageRespHandler(msg);
 				}
 				
 				if(msg.msgType==msg.msgType.PUSH_PAGE){
@@ -118,25 +137,32 @@ public class TCPClient extends Thread{
 						progressDialog = null;
 					}
 						
-					pushPageMsgHandler(msg,inputstream);
+					String filename=body.get("filename").toString();
+					int uploadByUserid=(Integer) body.get("uploadByUserid");
+					int pageNum = (Integer) body.get("pageNum");
+					int totalPage = (Integer) body.get("totalPage");
+					long imageLength = (Integer) body.get("imageLength");
+					msg.msgBody = new PushPageMsgBody(filename, uploadByUserid, pageNum, totalPage, imageLength);
+					
+					pushPageMsgHandler(msg,inStream);
 				}
 				
 				if(msg.msgType == msg.msgType.CONTRL_DROP_RESPONSE){
-					controlDropRespHandler(msg);
+					//controlDropRespHandler(msg);
 				}
 				if(msg.msgType == msg.msgType.CHANGE_LASTTIME_PAGE_RESP){
-					changeLastTimePageRespHandler(msg);
+					//changeLastTimePageRespHandler(msg);
 				}
 				if(msg.msgType == msg.msgType.USER_LIST_UPDATE){
-					updateUserListHandler(msg);
+					//updateUserListHandler(msg);
 				}
 				if(msg.msgType==msg.msgType.BYE){
 					System.out.println("You have quit conference.");
 					//break;
 					running = false;
 					socket.close();
-					outputstream.close();
-					inputstream.close();
+//					outputstream.close();
+//					inputstream.close();
 					this.stop();
 				}
 			}
@@ -157,7 +183,7 @@ public class TCPClient extends Thread{
 		
 	}
 	
-	public void pushPageMsgHandler(SerToCliMsg msg,ObjectInputStream is ){
+	public void pushPageMsgHandler(SerToCliMsg msg,InputStream is ){
 		PushPageMsgBody msgbody = (PushPageMsgBody) msg.msgBody;
         System.out.println(msgbody.filename);
         System.out.println(msgbody.imageLength);
@@ -169,13 +195,38 @@ public class TCPClient extends Thread{
         state.setTotalPageNumber(msgbody.totalPage);
         state.setUploadByUserid(msgbody.uploadByUserid);
         int len = (int) msgbody.imageLength;
-        int bufferSize = 9999999;
+        int bufferSize = 99999;
         byte[] buf = new byte[bufferSize];
 		//File a=null;
 		//FileInputStream fis=null;
 		try {
 			//int read=0;
-			is.readFully(buf, 0, len);
+			//is.readFully(buf, 0, len);
+			System.out.println("push page start to read to buf..");
+			System.out.println("avaiable bytes: "+is.available());
+			
+			int count = 0;
+			do {
+				int read = 0;
+
+				if (is != null) {
+					read = is.read(buf, count, len-count);
+					
+				}
+				System.out.println("read in upload " + read);
+				if (read == -1)
+					break;
+				
+
+				count += read;
+			} while (count != len);
+
+			
+			//int reslen = is.read(buf, 0, len);
+			//System.out.println("read length :"+reslen);
+			System.out.println("push page read to buf complete!");
+			
+			
 			Log.d(TAG, "TCPClient Thread id : "+Thread.currentThread().getId());
 			Message message=handler.obtainMessage();
 			Bundle bundle = new Bundle();
@@ -288,9 +339,14 @@ public class TCPClient extends Thread{
 			CliToSerMsg msg = new CliToSerMsg();
 			msg.msgType = msg.msgType.UPLOAD_REQ;
 			UploadReqBody body = new UploadReqBody(this.userId,this.conferenceid,filename,(long) file.length());
-			msg.MsgBody = body;
-			outputstream.writeObject(msg);
-			outputstream.flush();
+			msg.msgBody = body;
+//			outputstream.writeObject(msg);
+//			outputstream.flush();
+			String json_message = mapper.writeValueAsString(msg);
+			System.out.println("Upload_File Write json : "+json_message);
+			writer.println(json_message);
+			writer.flush();
+			
 			fis = new FileInputStream(filePath);
 			int bufferSize = 1024;
 			byte[] buf = new byte[bufferSize];
@@ -304,11 +360,11 @@ public class TCPClient extends Thread{
 				if (read == -1) {
 					break;
 				}
-				outputstream.write(buf, 0, read);
+				outStream.write(buf, 0, read);
 				System.out.println("Write " + read + " bytes");
 			}
 			System.out.println("Write end");
-			outputstream.flush();
+			outStream.flush();
 			fis.close();
 			//this.progressBar.setString("处理文件: " + filename + "...");
 			progressDialog.setMessage("处理文件: " + filename + "...");
@@ -395,16 +451,23 @@ public class TCPClient extends Thread{
 		CliToSerMsg msg = new CliToSerMsg();
 		msg.msgType = msg.msgType.REGISTER_REQ;
 		RegisterReqBody body = new RegisterReqBody(this.userId, this.userName, this.conferenceid);
-		msg.MsgBody = body;
+		msg.msgBody = body;
 		try {
-			outputstream.writeObject(msg);
-			SerToCliMsg respmsg = (SerToCliMsg)inputstream.readObject();
-			RegisterRespBody respbody = (RegisterRespBody)respmsg.msgBody;
-			if(respbody.responseType==respbody.responseType.OK){
-				System.out.println("The user has joined the conference.");
-			}else{
-				System.out.println("The server turn down the user's request to join the conference.");
-			}
+			//outputstream.writeObject(msg);
+			String json_req = mapper.writeValueAsString(msg);
+			System.out.println("Register write json : "+json_req);
+			writer.println(json_req);
+			writer.flush();
+			
+//			SerToCliMsg respmsg = (SerToCliMsg)inputstream.readObject();
+//			RegisterRespBody respbody = (RegisterRespBody)respmsg.msgBody;
+//			if(respbody.responseType==respbody.responseType.OK){
+//				System.out.println("The user has joined the conference.");
+//			}else{
+//				System.out.println("The server turn down the user's request to join the conference.");
+//			}
+			String json_res = reader.readLine();
+			System.out.println("Register read json : "+json_res);
 			
 		} catch (Exception e) {
 		    //processor.showError("连接服务器失�?);
@@ -418,9 +481,13 @@ public class TCPClient extends Thread{
 		msg.msgType = msg.msgType.CHANGE_PAGE_REQ;
 		ChangePageReqBody msgbody = new ChangePageReqBody(filename,toPage,uploadByUserId,BasicInfomation.conferenceid,
 				BasicInfomation.userid);
-		msg.MsgBody = msgbody;
+		msg.msgBody = msgbody;
 		try {
-			outputstream.writeObject(msg);
+			//outputstream.writeObject(msg);
+			String json_message = mapper.writeValueAsString(msg);
+			System.out.println("ChangePage Write json : "+json_message);
+			writer.println(json_message);
+			writer.flush();
 		} catch (IOException e) {
 		    // processor.showError("连接服务器失�?);
 		    e.printStackTrace();
@@ -432,9 +499,13 @@ public class TCPClient extends Thread{
 		msg.msgType = msg.msgType.CHANGE_LASTTIME_PAGE_REQ;
 		ChangeLastTimePageReqBody msgbody = new ChangeLastTimePageReqBody(filename,uploadByUserId,BasicInfomation.conferenceid,
 				BasicInfomation.userid);
-		msg.MsgBody = msgbody;
+		msg.msgBody = msgbody;
 		try {
-			outputstream.writeObject(msg);
+			//outputstream.writeObject(msg);
+			String json_message = mapper.writeValueAsString(msg);
+			System.out.println("ChangeLastTime Write json : "+json_message);
+			writer.println(json_message);
+			writer.flush();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -447,9 +518,13 @@ public class TCPClient extends Thread{
 			CliToSerMsg reqmsg = new CliToSerMsg();
 			reqmsg.msgType = CliToSerMsg.MSG_TYPE.CONTROL_REQ;
 			CtrlReqBody reqmsgbody = new CtrlReqBody(this.userId,this.userName,this.conferenceid);
-			reqmsg.MsgBody = reqmsgbody;
-			outputstream.writeObject(reqmsg);
-			outputstream.flush();
+			reqmsg.msgBody = reqmsgbody;
+			//outputstream.writeObject(reqmsg);
+			//outputstream.flush();
+			String json_message = mapper.writeValueAsString(reqmsg);
+			System.out.println("ContrlReq Write json : "+json_message);
+			writer.println(json_message);
+			writer.flush();
 		} catch (IOException e) {
 		    // processor.showError("连接服务器失�?);
 		    e.printStackTrace();
@@ -459,8 +534,12 @@ public class TCPClient extends Thread{
 		try{
 			CliToSerMsg reqmsg = new CliToSerMsg();
 			reqmsg.msgType = CliToSerMsg.MSG_TYPE.CONTRL_DROP_REQ;
-			outputstream.writeObject(reqmsg);
-			outputstream.flush();
+			//outputstream.writeObject(reqmsg);
+			//outputstream.flush();
+			String json_message = mapper.writeValueAsString(reqmsg);
+			System.out.println("ContrlDrop Write json : "+json_message);
+			writer.println(json_message);
+			writer.flush();
 		}catch(Exception e){
 		    // processor.showError("连接服务器失�?);
 		    e.printStackTrace();
@@ -489,10 +568,17 @@ public class TCPClient extends Thread{
 		CliToSerMsg msg = new CliToSerMsg();
 		msg.msgType = msg.msgType.BYE;
 		try {
-			outputstream.writeObject(msg);
-			outputstream.flush();
+			//outputstream.writeObject(msg);
+			//outputstream.flush();
+			String json_message = mapper.writeValueAsString(msg);
+			System.out.println("QuitConf Write json : "+json_message);
+			writer.println(json_message);
+			writer.flush();
+			
 			//outputstream.close();
 			//inputstream.close();
+			outStream.close();
+			inStream.close();
 		} catch (IOException e) {
 		    // processor.showError("�?��会议失败");
 		    e.printStackTrace();

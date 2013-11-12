@@ -246,8 +246,8 @@ public class Login extends Activity {
                 data.putString("password", password);
                 data.putString("userId", message.getData().getString("userId"));
                 intent.putExtras(data);
-            	//finish();
 				startActivity(intent);
+				finish();
                 break;
             case 2:
             	String failure = message.getData().getString("info");

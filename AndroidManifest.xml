@@ -45,6 +45,11 @@
             android:name="cn.edu.bupt.mmc.docshare.gui.FileBrowserActivity"
             android:screenOrientation="landscape" >
         </activity>
+        <activity
+            android:name="cn.bupt.mmc.desktopshare.gui.DesktopShareActivity"
+            android:theme="@android:style/Theme.Holo.Light.NoActionBar.Fullscreen" 
+            android:screenOrientation="landscape" >
+        </activity>
     </application>
 
     <uses-permission android:name="android.permission.USE_SIP" />

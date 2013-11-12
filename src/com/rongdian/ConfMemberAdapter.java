@@ -14,8 +14,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ConfMemberAdapter extends BaseExpandableListAdapter {  
-    private List<String>      mGroupData = new ArrayList<String>();  
-    private List<HashMap<Integer,String>> mChildData= new ArrayList<HashMap<Integer,String>>();   
+    private List<String>      mGroupData;
+    private List<HashMap<Integer,String>> mChildData;
     private Context               mContext;  
     LayoutInflater                  mInflater;  
       
