@@ -24,33 +24,30 @@ import android.widget.ExpandableListView.OnChildClickListener;
 public class MyContactActivity extends ExpandableListActivity implements OnChildClickListener{
 
 	private static ConfMemberAdapter ContactAdapter;
-	public static List<String> mContactGroupData = new ArrayList<String>();
-	public static List<HashMap<Integer, String>> mContactChildData = new ArrayList<HashMap<Integer, String>>();
+	public static List<String> mContactGroupData;
+	public static List<HashMap<Integer, String>> mContactChildData;
 	//记录child的checkbox是否被选中，如果选中则HaspMap中有
-	public static List<HashMap<Integer, Boolean>> mCheckedObj = new ArrayList<HashMap<Integer, Boolean>>();
+	public static List<HashMap<Integer, Boolean>> mCheckedObj;
 	//记录用户名和id的对应关系
-	public static Map<String,Integer> userRecord=new HashMap<String,Integer>();
+	public static Map<String,Integer> userRecord;
 	private static String userId;
-	private static int visitCount=0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.i("myContact","OnCreate");
 		userId=this.getIntent().getExtras().getString("userID"); 
-		System.out.println("GroupSize:"+mContactGroupData.size()+" ChildSize:"+mContactChildData.size());
 		ExpandableListView contactELV = this.getExpandableListView();
 		contactELV.setBackgroundColor(Color.WHITE);
 		contactELV.setPadding(10, 20, 10, 0);
-		if(visitCount!=0){
-			setListAdapter(ContactAdapter);
-			return;
-		}
+		mContactGroupData = new ArrayList<String>();
+		mContactChildData = new ArrayList<HashMap<Integer, String>>();
+		mCheckedObj = new ArrayList<HashMap<Integer, Boolean>>();
+		userRecord=new HashMap<String,Integer>();
 		InitData();//第一次进入时加载数据
 		ContactAdapter = new ConfMemberAdapter(getLayoutInflater(), this,
 				mContactGroupData, mContactChildData);
 		setListAdapter(ContactAdapter);
-		visitCount++;
 		
 	}
 

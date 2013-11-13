@@ -24,12 +24,11 @@ import android.widget.ExpandableListView.OnChildClickListener;
 public class MyGroupActivity extends ExpandableListActivity implements OnChildClickListener{
 
 	private static ConfMemberAdapter GroupAdapter;
-	public static List<String>      mGroupGroupData = new ArrayList<String>();  
-	public static List<HashMap<Integer,String>> mGroupChildData= new ArrayList<HashMap<Integer,String>>(); 
-	public static List<HashMap<Integer, Boolean>> mCheckedObj = new ArrayList<HashMap<Integer, Boolean>>();
-	public static Map<String,Integer> userRecord=new HashMap<String,Integer>();
+	public static List<String>      mGroupGroupData;  
+	public static List<HashMap<Integer,String>> mGroupChildData; 
+	public static List<HashMap<Integer, Boolean>> mCheckedObj;
+	public static Map<String,Integer> userRecord;
 	private static String userId;
-	private static int visitCount=0;
     
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,14 +37,13 @@ public class MyGroupActivity extends ExpandableListActivity implements OnChildCl
 		ExpandableListView groupELV=this.getExpandableListView();
 		groupELV.setBackgroundColor(Color.WHITE);
 		groupELV.setPadding(10, 20, 10, 0);
-		if(visitCount!=0){
-			setListAdapter(GroupAdapter);
-			return;
-		}
+		mGroupGroupData = new ArrayList<String>();
+		mGroupChildData= new ArrayList<HashMap<Integer,String>>();
+		mCheckedObj = new ArrayList<HashMap<Integer, Boolean>>();
+		userRecord=new HashMap<String,Integer>();
 		InitData();
 		GroupAdapter=new ConfMemberAdapter(getLayoutInflater(),this,mGroupGroupData,mGroupChildData);
 		setListAdapter(GroupAdapter);
-		visitCount++;
     }
     
     private void InitData(){  

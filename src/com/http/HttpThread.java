@@ -85,30 +85,25 @@ public class HttpThread extends Thread {
 				System.out.println("logined:"+logined+"  name:"+name+"  pass:"+pass+" userId:"+userId);
 				
 				data.putString("userId", userId);
-				if(logined.equals("success")){
-					msg.what=2; //已经登录过了,原来是刷新，现在是重新登录
+
+				if(name.equals("true")){
+					msg.what=2; 
 					data.putBoolean("login", false);
-					data.putString("info", "alreadyLogined");
+					data.putString("info", "nameError");
+					msg.setData(data);
+				}
+				else if(pass.equals("true")){
+					msg.what=2; 
+					data.putBoolean("login", false);
+					data.putString("info", "passError");
 					msg.setData(data);
 				}else{
-					if(name.equals("true")){
-						msg.what=2; 
-						data.putBoolean("login", false);
-						data.putString("info", "nameError");
-						msg.setData(data);
-					}
-					else if(pass.equals("true")){
-						msg.what=2; 
-						data.putBoolean("login", false);
-						data.putString("info", "passError");
-						msg.setData(data);
-					}else{
-						msg.what=1; 
-						data.putBoolean("login", true);
-						data.putString("info", "normal");
-						msg.setData(data);
-					}
-				} 
+					msg.what=1; 
+					data.putBoolean("login", true);
+					data.putString("info", "normal");
+					msg.setData(data);
+				}
+				
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
