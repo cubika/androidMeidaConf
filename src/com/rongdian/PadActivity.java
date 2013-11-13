@@ -65,6 +65,8 @@ public class PadActivity extends RtpAvTermAndroidActivity {
 	GL2JNIView mGL2JINView = null;    //显示远端视频界面组件
 	long localVideoWidth = 352;
 	long localVideoHeight = 288;
+//	long localVideoWidth = 176;
+//	long localVideoHeight = 144;
 	long localVideoFrameRate = 15;
 
 	// 用户和会议标识

@@ -19,7 +19,7 @@ public class ContactManageActivity extends Activity implements ContactListener{
 	final int ACTION_ADD_GROUP=2;
 	final int ACTION_ADD_FRIEND_FOR_GROUP=3;
 	final int ACTION_RELOAD=4;
-	private static String currentTab;
+	private static String currentTab="Friend";
 	
 	public static class ContactFragment extends Fragment{
 		
