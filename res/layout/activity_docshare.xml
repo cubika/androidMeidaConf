@@ -1,0 +1,119 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/applyBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="80dp"
+        android:layout_marginTop="50dp"
+        android:text="@string/apply" />
+
+    <Button
+        android:id="@+id/dropBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/applyBtn"
+        android:layout_below="@id/applyBtn"
+        android:layout_marginTop="174dp"
+        android:text="@string/drop" />
+
+    <Button
+        android:id="@+id/uploadBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/dropBtn"
+        android:layout_below="@id/dropBtn"
+        android:layout_marginTop="174dp"
+        android:text="@string/upload" />
+
+     
+
+       <Button
+           android:id="@+id/firstPage"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_above="@id/dropBtn"
+           android:layout_alignParentRight="true"
+           android:layout_marginRight="80dp"
+           android:text="@string/homepage" />
+
+       <Button
+           android:id="@+id/preBtn"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+		   android:layout_below="@id/firstPage"
+           android:layout_alignRight="@id/firstPage"
+           android:layout_marginTop="100dp"
+           android:text="@string/prePage" />
+
+        <Button
+            android:id="@+id/nextBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/preBtn"
+            android:layout_alignRight="@id/preBtn"
+            android:layout_marginTop="100dp"
+            android:text="@string/nextPage" />
+        
+        <Button
+            android:id="@+id/endPage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/nextBtn"
+            android:layout_alignRight="@id/nextBtn"
+            android:layout_marginTop="100dp"
+            android:text="@string/endPage" />
+
+
+    
+    <fragment
+        android:id="@+id/fragment1"
+        android:name="cn.edu.bupt.mmc.docshare.gui.DocFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignBottom="@+id/uploadBtn"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@id/firstPage"
+        android:layout_toRightOf="@id/applyBtn"
+        android:layout_marginLeft="80dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="80dp"/>
+
+
+    <TextView
+        android:id="@+id/gotoTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/endPage"
+        android:layout_marginTop="50dp"
+        android:layout_alignLeft="@id/endPage"
+        android:layout_marginLeft="-100dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/gotoPage" />
+    
+    <EditText
+        android:id="@+id/pageNumberET"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/gotoTV"
+        android:layout_alignBaseline="@+id/gotoTV"
+        android:layout_marginTop="50dp"
+        android:ems="5"
+        android:inputType="number"/>
+
+    <Button
+        android:id="@+id/gotoOkBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/pageNumberET"
+        android:layout_toRightOf="@id/pageNumberET"
+        android:text="@string/gotook" />
+
+</RelativeLayout>
