@@ -1274,7 +1274,6 @@ containing a value of this type.
         public static final int abs__up=0x7f05000b;
         public static final int action_exit_app=0x7f0500b7;
         public static final int action_exit_conf=0x7f0500b6;
-        public static final int action_hide_surface=0x7f0500b8;
         public static final int action_show_conf=0x7f0500b4;
         public static final int action_show_par=0x7f0500b5;
         public static final int add=0x7f050079;

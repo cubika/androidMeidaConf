@@ -305,11 +305,13 @@ public class ConfManageFragment extends DialogFragment implements OnClickListene
 		public void onClick(DialogInterface dialog, int which) {
 			//点击的是确认按钮
 			if (which == DialogInterface.BUTTON_POSITIVE){
-				String userName=onlineUsers[index];
-				speakerUserId=onlineUserMap.get(userName);
-				System.out.println("userName:"+userName+" speakerUserId:"+speakerUserId);
-				dialog.dismiss();
-				new SpeakTask().execute("http://"+ Constants.registarIp+":8888/MediaConf/speakControl.do?confId="+PadActivity.confId);
+				if(index >=0 && index <=onlineUsers.length-1 ){
+					String userName=onlineUsers[index];
+					speakerUserId=onlineUserMap.get(userName);
+					System.out.println("userName:"+userName+" speakerUserId:"+speakerUserId);
+					dialog.dismiss();
+					new SpeakTask().execute("http://"+ Constants.registarIp+":8888/MediaConf/speakControl.do?confId="+PadActivity.confId);
+				}
 			}else if(which == DialogInterface.BUTTON_NEGATIVE){
 				dialog.dismiss();
 			}else if (which >= 0){ //选择的是单选按钮

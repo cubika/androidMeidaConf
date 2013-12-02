@@ -510,7 +510,6 @@ int id abs__title 0x7f050020
 int id abs__up 0x7f05000b
 int id action_exit_app 0x7f0500b7
 int id action_exit_conf 0x7f0500b6
-int id action_hide_surface 0x7f0500b8
 int id action_show_conf 0x7f0500b4
 int id action_show_par 0x7f0500b5
 int id add 0x7f050079

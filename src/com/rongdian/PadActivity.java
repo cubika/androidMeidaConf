@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.http.NameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -178,7 +179,14 @@ public class PadActivity extends RtpAvTermAndroidActivity {
 	                if(changeIndex>=0){                	
 	                    String[] subString=messages[u].split(":");
 	                    String[] changeInfo=subString[1].split(";");
-	                    Log.v("refreshData", "change chairman url:" + changeInfo[1]);	                   
+	                    String changeChairmanUrl = "http://"+ Constants.registarIp+":8888"+changeInfo[1];
+	                    Log.v("refreshData", "change chairman url:" + changeChairmanUrl);	
+	                    //更换主席
+	                    try {
+							HttpUtils.execRequest(changeChairmanUrl,  new ArrayList<NameValuePair>());
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 	                }
 	                
 	                // 更换会议主席
@@ -720,12 +728,12 @@ public class PadActivity extends RtpAvTermAndroidActivity {
         case R.id.action_exit_app:
         	quitApp();
         	return true;
-        case R.id.action_hide_surface:
-        	if(mSurfaceView.isShown())
-        		mSurfaceView.setVisibility(View.GONE);
-        	else
-        		mSurfaceView.setVisibility(View.VISIBLE);
-        	return true;
+//        case R.id.action_hide_surface:
+//        	if(mSurfaceView.isShown())
+//        		mSurfaceView.setVisibility(View.GONE);
+//        	else
+//        		mSurfaceView.setVisibility(View.VISIBLE);
+//        	return true;
         	
         }
         return super.onOptionsItemSelected(item);
