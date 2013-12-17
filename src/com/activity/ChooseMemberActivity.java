@@ -52,25 +52,29 @@ public class ChooseMemberActivity extends TabActivity {
 	public static String GetMemberIDs(){
 		String temp = "";
 		
-		System.out.println("Contact checkedObject size:"+MyContactActivity.mCheckedObj.size());
-		System.out.println("Group checkedObject size"+MyGroupActivity.mCheckedObj.size());
-		for(int i=0;i<MyContactActivity.mCheckedObj.size();i++){
-			HashMap<Integer, Boolean> checkHM=MyContactActivity.mCheckedObj.get(i);
-			HashMap<Integer, String> childHM=MyContactActivity.mContactChildData.get(i);
-			for(Integer key:checkHM.keySet()){
-				String userName=childHM.get(key);
-				String idContact=MyContactActivity.userRecord.get(userName).toString();
-				temp+=idContact+"|";
+		if(MyContactActivity.mCheckedObj != null){
+			System.out.println("Contact checkedObject size:"+MyContactActivity.mCheckedObj.size());
+			for(int i=0;i<MyContactActivity.mCheckedObj.size();i++){
+				HashMap<Integer, Boolean> checkHM=MyContactActivity.mCheckedObj.get(i);
+				HashMap<Integer, String> childHM=MyContactActivity.mContactChildData.get(i);
+				for(Integer key:checkHM.keySet()){
+					String userName=childHM.get(key);
+					String idContact=MyContactActivity.userRecord.get(userName).toString();
+					temp+=idContact+"|";
+				}
 			}
 		}
 		
-		for(int i=0;i<MyGroupActivity.mCheckedObj.size();i++){
-			HashMap<Integer, Boolean> checkHM=MyGroupActivity.mCheckedObj.get(i);
-			HashMap<Integer, String> childHM=MyGroupActivity.mGroupChildData.get(i);
-			for(Integer key:checkHM.keySet()){
-				String userName=childHM.get(key);
-				String idContact=MyGroupActivity.userRecord.get(userName).toString();
-				temp+=idContact+"|";
+		if(MyGroupActivity.mCheckedObj != null){
+			System.out.println("Group checkedObject size"+MyGroupActivity.mCheckedObj.size());
+			for(int i=0;i<MyGroupActivity.mCheckedObj.size();i++){
+				HashMap<Integer, Boolean> checkHM=MyGroupActivity.mCheckedObj.get(i);
+				HashMap<Integer, String> childHM=MyGroupActivity.mGroupChildData.get(i);
+				for(Integer key:checkHM.keySet()){
+					String userName=childHM.get(key);
+					String idContact=MyGroupActivity.userRecord.get(userName).toString();
+					temp+=idContact+"|";
+				}
 			}
 		}
 		
